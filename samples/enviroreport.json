@@ -1,0 +1,939 @@
+{
+    "name": "Environmental Report",
+    "prompts": [{
+            "prompt-type": "select-multiple",
+            "prompt": {
+                "en": "Nature of the potential hazard:"
+            },
+            "options": [{
+                    "value": "hazair",
+                    "label": {
+                        "en": "Air (dust/particulates, open burning, and industrial emissions)"
+                    }
+                },
+                {
+                    "value": "hazland",
+                    "label": {
+                        "en": "Land (open dumping, hazardous waste, landfill)"
+                    }
+                },
+                {
+                    "value": "hazwater",
+                    "label": {
+                        "en": "Water (stream/lake pollution, illegal discharge into waterways)"
+                    }
+                },
+                {
+                    "value": "hazdrinking",
+                    "label": {
+                        "en": "Public Drinking Water (issues affecting quality or quantity of drinking water)"
+                    }
+                },
+                {
+                    "value": "hazagriculture",
+                    "label": {
+                        "en": "Agricultural Problems (odors, mismanagement of animal manure, water, ammonia, and pesticides)"
+                    }
+                },
+                {
+                    "value": "hazother",
+                    "label": {
+                        "en": "Other..."
+                    }
+                }
+            ],
+            "key": "incident_type"
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "Please specify the nature of the other complaint:"
+            },
+            "key": "hazother_text",
+            "constraints": [{
+                "operator": "in",
+                "value": "hazother",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt-type": "multi-line",
+            "prompt": {
+                "en": "What happened?  Please describe the details of the incident."
+            },
+            "key": "description"
+        },
+        {
+            "prompt-type": "multi-line",
+            "prompt": {
+                "en": "When did it happen? If you know, please state the time and date of the incident."
+            },
+            "key": "srtime"
+        },
+        {
+            "prompt-type": "multi-line",
+            "prompt": {
+                "en": "Where did it happen? It is always helpful to know where the violation is occurring. If you do not know the exact address, the cross streets are very important."
+            },
+            "key": "location"
+        },
+        {
+            "prompt-type": "select-one",
+            "prompt": {
+                "en": "Does this deter you from engaging in your usual activities?"
+            },
+            "options": [{
+                    "value": "yes",
+                    "label": {
+                        "en": "Yes"
+                    }
+                },
+                {
+                    "value": "no",
+                    "label": {
+                        "en": "No"
+                    }
+                }
+            ],
+            "key": "deter_activity"
+        },
+        {
+            "prompt-type": "multi-line",
+            "prompt": {
+                "en": "You can provide details on how this hazard impacts your daily activities here:"
+            },
+            "key": "deter_details",
+            "constraints": [{
+                "operator": "=",
+                "value": "yes",
+                "key": "deter_activity"
+            }]
+        },
+        {
+            "prompt-type": "select-multiple",
+            "prompt": {
+                "en": "Type of site where hazard is occurring:"
+            },
+            "options": [{
+                    "value": "loc_commercial",
+                    "label": {
+                        "en": "Commercial"
+                    }
+                },
+                {
+                    "value": "loc_industrial",
+                    "label": {
+                        "en": "Industrial"
+                    }
+                },
+                {
+                    "value": "loc_mixed",
+                    "label": {
+                        "en": "Mixed Use Commercial/Residential"
+                    }
+                },
+                {
+                    "value": "loc_residential",
+                    "label": {
+                        "en": "Residential"
+                    }
+                },
+                {
+                    "value": "loc_right_of_way",
+                    "label": {
+                        "en": "Right of Way"
+                    }
+                },
+                {
+                    "value": "loc_school",
+                    "label": {
+                        "en": "School"
+                    }
+                },
+                {
+                    "value": "loc_waterbody",
+                    "label": {
+                        "en": "Waterbody"
+                    }
+                },
+                {
+                    "value": "loc_curb",
+                    "label": {
+                        "en": "At Curb"
+                    }
+                },
+                {
+                    "value": "loc_behind_building",
+                    "label": {
+                        "en": "Behind Building"
+                    }
+                },
+                {
+                    "value": "loc_cta",
+                    "label": {
+                        "en": "CTA"
+                    }
+                },
+                {
+                    "value": "loc_alley",
+                    "label": {
+                        "en": "In Alley"
+                    }
+                },
+                {
+                    "value": "loc_railroad",
+                    "label": {
+                        "en": "Railroad Property"
+                    }
+                },
+                {
+                    "value": "loc_street",
+                    "label": {
+                        "en": "Street"
+                    }
+                },
+                {
+                    "value": "loc_vacant_lot",
+                    "label": {
+                        "en": "Vacant Lot"
+                    }
+                },
+                {
+                    "value": "loc_unknown",
+                    "label": {
+                        "en": "Unknown"
+                    }
+                },
+                {
+                    "value": "loc_other",
+                    "label": {
+                        "en": "Other..."
+                    }
+                }
+            ],
+            "key": "loc_types"
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "Please specify:"
+            },
+            "key": "loctext",
+            "constraints": [{
+                "operator": "in",
+                "value": "loc_other",
+                "key": "loc_types"
+            }]
+        },
+        {
+            "prompt-type": "select-multiple",
+            "prompt": {
+                "en": "This site is close to..."
+            },
+            "options": [{
+                    "value": "home",
+                    "label": {
+                        "en": "My Home"
+                    }
+                },
+                {
+                    "value": "work",
+                    "label": {
+                        "en": "My Work"
+                    }
+                },
+                {
+                    "value": "school",
+                    "label": {
+                        "en": "School"
+                    }
+                },
+                {
+                    "value": "park",
+                    "label": {
+                        "en": "Park"
+                    }
+                },
+                {
+                    "value": "other",
+                    "label": {
+                        "en": "Other"
+                    }
+                }
+            ],
+            "key": "location_relationship"
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "Please specify:"
+            },
+            "key": "location_relationship_other",
+            "constraints": [{
+                "operator": "in",
+                "value": "other",
+                "key": "location_relationship"
+            }]
+        },
+        {
+            "prompt-type": "select-multiple",
+            "prompt": {
+                "en": "Where on site is the issue occurring?"
+            },
+            "options": [{
+                    "value": "site_alley",
+                    "label": {
+                        "en": "Alley"
+                    }
+                },
+                {
+                    "value": "site_front_lot",
+                    "label": {
+                        "en": "Front of Lot"
+                    }
+                },
+                {
+                    "value": "site_indoors",
+                    "label": {
+                        "en": "Indoors"
+                    }
+                },
+                {
+                    "value": "site_lakeshore",
+                    "label": {
+                        "en": "Lakeshore"
+                    }
+                },
+                {
+                    "value": "site_parkway",
+                    "label": {
+                        "en": "Parkway"
+                    }
+                },
+                {
+                    "value": "site_rear_lot",
+                    "label": {
+                        "en": "Rear of Lot"
+                    }
+                },
+                {
+                    "value": "site_riverbank",
+                    "label": {
+                        "en": "Riverbank"
+                    }
+                },
+                {
+                    "value": "site_rooftop",
+                    "label": {
+                        "en": "Rooftop"
+                    }
+                },
+                {
+                    "value": "site_side_lot",
+                    "label": {
+                        "en": "Side of Lot"
+                    }
+                },
+                {
+                    "value": "site_sidewalk",
+                    "label": {
+                        "en": "Sidewalk"
+                    }
+                },
+                {
+                    "value": "site_street",
+                    "label": {
+                        "en": "Street"
+                    }
+                },
+                {
+                    "value": "site_unknown",
+                    "label": {
+                        "en": "Unknown"
+                    }
+                },
+                {
+                    "value": "site_other",
+                    "label": {
+                        "en": "Other..."
+                    }
+                }
+            ],
+            "key": "site_location"
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "Please specify:"
+            },
+            "key": "sitetext",
+            "constraints": [{
+                "operator": "in",
+                "value": "site_other",
+                "key": "site_location"
+            }]
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "What is the business name (if applicable)?"
+            },
+            "key": "busname"
+        },
+        {
+            "prompt": {
+                "en": "What type of potential hazard are you reporting? (Check all that apply.)"
+            },
+            "prompt-type": "select-multiple",
+            "key": "hazair_type",
+            "options": [{
+                    "value": "hazair_flydumping",
+                    "label": {
+                        "en": "Fly Dumping"
+                    }
+                },
+                {
+                    "value": "hazair_pollution",
+                    "label": {
+                        "en": "Air Pollution"
+                    }
+                },
+                {
+                    "value": "hazair_odor",
+                    "label": {
+                        "en": "Odor"
+                    }
+                },
+                {
+                    "value": "hazair_dust",
+                    "label": {
+                        "en": "Dust"
+                    }
+                },
+                {
+                    "value": "hazair_burning",
+                    "label": {
+                        "en": "Burning"
+                    }
+                },
+                {
+                    "value": "hazair_chemical",
+                    "label": {
+                        "en": "Chemical"
+                    }
+                },
+                {
+                    "value": "hazair_food",
+                    "label": {
+                        "en": "Food"
+                    }
+                },
+                {
+                    "value": "hazair_garbage",
+                    "label": {
+                        "en": "Garbage"
+                    }
+                },
+                {
+                    "value": "hazair_petroleum",
+                    "label": {
+                        "en": "Petroleum"
+                    }
+                },
+                {
+                    "value": "hazair_fumes_emissions",
+                    "label": {
+                        "en": "Process Fumes/Emissions"
+                    }
+                },
+                {
+                    "value": "hazair_rotten_egg_smell",
+                    "label": {
+                        "en": "Rotten Egg Smell"
+                    }
+                },
+                {
+                    "value": "hazair_sewer",
+                    "label": {
+                        "en": "Sewer"
+                    }
+                },
+                {
+                    "value": "hazair_smoke",
+                    "label": {
+                        "en": "Smoke"
+                    }
+                },
+                {
+                    "value": "hazair_truck_idling",
+                    "label": {
+                        "en": "Truck Idling"
+                    }
+                },
+                {
+                    "value": "hazair_other",
+                    "label": {
+                        "en": "Other..."
+                    }
+                }
+            ],
+            "constraints": [{
+                "operator": "in",
+                "value": "hazair",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "Please specify:"
+            },
+            "key": "hazother_text",
+            "constraints": [{
+                    "operator": "in",
+                    "value": "hazair",
+                    "key": "incident_type"
+                },
+                {
+                    "operator": "in",
+                    "value": "hazair_other",
+                    "key": "hazair_type"
+                }
+            ]
+        },
+        {
+            "prompt": {
+                "en": "What is the activity that is causing the air pollution, odor or dust?"
+            },
+            "prompt-type": "select-multiple",
+            "key": "hazairpollution_type",
+            "options": [{
+                    "value": "hazairpollution_concrete",
+                    "label": {
+                        "en": "Concrete Saw / Cutting"
+                    }
+                },
+                {
+                    "value": "hazairpollution_construction",
+                    "label": {
+                        "en": "Construction"
+                    }
+                },
+                {
+                    "value": "hazairpollution_demolition",
+                    "label": {
+                        "en": "Demolition"
+                    }
+                },
+                {
+                    "value": "hazairpollution_excavation",
+                    "label": {
+                        "en": "Excavation"
+                    }
+                },
+                {
+                    "value": "hazairpollution_factory",
+                    "label": {
+                        "en": "Factory"
+                    }
+                },
+                {
+                    "value": "hazairpollution_grading",
+                    "label": {
+                        "en": "Grading"
+                    }
+                },
+                {
+                    "value": "hazairpollution_open_burning",
+                    "label": {
+                        "en": "Open Burning"
+                    }
+                },
+                {
+                    "value": "hazairpollution_sandblasting",
+                    "label": {
+                        "en": "Sandblasting"
+                    }
+                },
+                {
+                    "value": "hazairpollution_unknown",
+                    "label": {
+                        "en": "Unknown"
+                    }
+                },
+                {
+                    "value": "hazairpollution_other",
+                    "label": {
+                        "en": "Other..."
+                    }
+                }
+            ],
+            "constraints": [{
+                "operator": "in",
+                "value": "hazair",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "Please specify:"
+            },
+            "key": "hazother_text",
+            "constraints": [{
+                    "operator": "in",
+                    "value": "hazair",
+                    "key": "incident_type"
+                },
+                {
+                    "operator": "in",
+                    "value": "hazairpollution_other",
+                    "key": "hazairpollution_type"
+                }
+            ]
+        },
+        {
+            "prompt": {
+                "en": "Rate the strength of the odor or dust:"
+            },
+            "prompt-type": "select-one",
+            "key": "hazair_intensity",
+            "options": [{
+                    "value": "5",
+                    "label": {
+                        "en": "Very Strong"
+                    }
+                },
+                {
+                    "value": "4",
+                    "label": {
+                        "en": "Strong"
+                    }
+                },
+                {
+                    "value": "3",
+                    "label": {
+                        "en": "Somewhat Strong"
+                    }
+                },
+                {
+                    "value": "2",
+                    "label": {
+                        "en": "Faint"
+                    }
+                },
+                {
+                    "value": "1",
+                    "label": {
+                        "en": "Very Faint"
+                    }
+                }
+            ],
+            "constraints": [{
+                "operator": "in",
+                "value": "hazair",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "Describe debris in detail:"
+            },
+            "key": "hazland_debris",
+            "constraints": [{
+                "operator": "in",
+                "value": "hazland",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt": {
+                "en": "Is debris blocking alley?"
+            },
+            "prompt-type": "select-one",
+            "key": "hazland_debris_blocking",
+            "options": [{
+                    "value": "1",
+                    "label": {
+                        "en": "Yes"
+                    }
+                },
+                {
+                    "value": "0",
+                    "label": {
+                        "en": "No"
+                    }
+                }
+            ],
+            "constraints": [{
+                "operator": "in",
+                "value": "hazland",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt": {
+                "en": "Are you a witness to the dumping, and do you have evidence of who did the dumping?"
+            },
+            "prompt-type": "select-one",
+            "key": "hazland_dumping_witness",
+            "options": [{
+                    "value": "1",
+                    "label": {
+                        "en": "Yes"
+                    }
+                },
+                {
+                    "value": "0",
+                    "label": {
+                        "en": "No"
+                    }
+                }
+            ],
+            "constraints": [{
+                "operator": "in",
+                "value": "hazland",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt": {
+                "en": "Are you willing to complete a witness report in order to be eligible for a possible reward?"
+            },
+            "prompt-type": "select-one",
+            "key": "hazland_dumping_witness_report",
+            "options": [{
+                    "value": "1",
+                    "label": {
+                        "en": "Yes"
+                    }
+                },
+                {
+                    "value": "0",
+                    "label": {
+                        "en": "No"
+                    }
+                }
+            ],
+            "constraints": [{
+                "operator": "in",
+                "value": "hazland",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt": {
+                "en": "Is this residential flooding?"
+            },
+            "prompt-type": "select-one",
+            "key": "hazwater_residential_flooding",
+            "options": [{
+                    "value": "1",
+                    "label": {
+                        "en": "Yes"
+                    }
+                },
+                {
+                    "value": "0",
+                    "label": {
+                        "en": "No"
+                    }
+                }
+            ],
+            "constraints": [{
+                "operator": "in",
+                "value": "hazwater",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt": {
+                "en": "Does this concern a sewer system?"
+            },
+            "prompt-type": "select-one",
+            "key": "hazwater_sewer",
+            "options": [{
+                    "value": "1",
+                    "label": {
+                        "en": "Yes"
+                    }
+                },
+                {
+                    "value": "0",
+                    "label": {
+                        "en": "No"
+                    }
+                }
+            ],
+            "constraints": [{
+                "operator": "in",
+                "value": "hazwater",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt": {
+                "en": "Does this concern a water body?"
+            },
+            "prompt-type": "select-one",
+            "key": "hazwater_water_body",
+            "options": [{
+                    "value": "1",
+                    "label": {
+                        "en": "Yes"
+                    }
+                },
+                {
+                    "value": "0",
+                    "label": {
+                        "en": "No"
+                    }
+                }
+            ],
+            "constraints": [{
+                "operator": "in",
+                "value": "hazwater",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "What is the name of the water body and where is it located, if applicable?"
+            },
+            "key": "hazwater_water_body_name",
+            "constraints": [{
+                "operator": "in",
+                "value": "hazwater",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "What was spilled or dumped?"
+            },
+            "key": "hazwater_spilled_dumped",
+            "constraints": [{
+                "operator": "in",
+                "value": "hazwater",
+                "key": "incident_type"
+            }]
+        },
+        {
+            "prompt-type": "select-one",
+            "prompt": {
+                "en": "Do you know who is responsible for the problem?"
+            },
+            "options": [{
+                    "value": "yes",
+                    "label": {
+                        "en": "Yes"
+                    }
+                },
+                {
+                    "value": "no",
+                    "label": {
+                        "en": "No"
+                    }
+                }
+            ],
+            "key": "violator_is_known"
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "Name of Responsible Party:"
+            },
+            "key": "violator_name",
+            "constraints": [{
+                "operator": "=",
+                "value": "yes",
+                "key": "violator_is_known"
+            }]
+        },
+        {
+            "prompt-type": "select-one",
+            "prompt": {
+                "en": "You can use this form to document potential hazards in your community. If this hazard is located in the city of Chicago, and you choose to report, the report will be sent to the Chicago Department of Public Health. If this hazard is located in Illinois, but outside the city of Chicago boundaries, the report will be sent to the Illinois Environmental Protection Agency. At the end of the screens, you will have the option to include your contact information in the report, or report anonymously.\n\nDo you want to report this hazard to the appropriate agencies?"
+            },
+            "options": [{
+                    "value": "1",
+                    "label": {
+                        "en": "Yes"
+                    }
+                },
+                {
+                    "value": "0",
+                    "label": {
+                        "en": "No"
+                    }
+                }
+            ],
+            "key": "report_incident"
+        },
+        {
+            "prompt-type": "single-line",
+            "prompt": {
+                "en": "What is Your Name?"
+            },
+            "key": "reporter_name",
+            "constraints": [{
+                "operator": "=",
+                "value": "1",
+                "key": "report_incident"
+            }]
+        },
+        {
+            "prompt": {
+                "en": "Where are you located?"
+            },
+            "hint": {
+                "en": "Location"
+            },
+            "prompt-type": "multi-line",
+            "key": "reporter_address",
+            "constraints": [{
+                "operator": "=",
+                "value": "1",
+                "key": "report_incident"
+            }]
+        },
+        {
+            "prompt": {
+                "en": "How can we contact you?"
+            },
+            "hint": {
+                "en": "Location"
+            },
+            "prompt-type": "multi-line",
+            "key": "reporter_contact_info",
+            "constraints": [{
+                "operator": "=",
+                "value": "1",
+                "key": "report_incident"
+            }]
+        },
+        {
+            "prompt-type": "multi-line",
+            "prompt": {
+                "en": "Additional Information"
+            },
+            "key": "additional_info",
+            "hint": {
+                "en": "Additional Information"
+            }
+        }
+    ],
+    "completed-actions": [{
+        "constraints": [{
+            "key": "incident_type",
+            "operator": "!=",
+            "value": ""
+        }],
+        "actions": [{
+            "action": "complete"
+        }]
+    }]
+}
