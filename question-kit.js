@@ -75,7 +75,7 @@ requirejs(["material", "jquery"], function(mdc) {
 		for (var i = 0; i < definition['options'].length; i++) {
 			var option = definition['options'][i];
 			
-			var optionKey = definition['key'] + '_' + option['value'];
+			var optionKey = definition['key'] + '_' + option['value'] + '_mdc_checkbox';
 			
 			output += '<div>';
 			output += '  <div class="mdc-form-field">';
@@ -234,7 +234,7 @@ requirejs(["material", "jquery"], function(mdc) {
 				$("#question_kit_update_report_button").click(function(eventObj) {
 					eventObj.preventDefault();
 					
-					QuestionKit.submitUpdates();
+					QuestionKit.submitUpdates(options['onUpdate']);
 					
 					return false;
 				});
@@ -281,9 +281,8 @@ requirejs(["material", "jquery"], function(mdc) {
 		QuestionKit.applyConstraints();
 	}
 	
-	QuestionKit.submitUpdates = function() {
-		console.log("SUBMIT");
-		console.log(JSON.stringify(QuestionKit.currentAnswers, null, 2));
+	QuestionKit.submitUpdates = function(onUpdate) {
+		onUpdate(QuestionKit.currentAnswers);
 	}
 
 	QuestionKit.addValue = function(key, value) {
@@ -324,7 +323,6 @@ requirejs(["material", "jquery"], function(mdc) {
 	
 	QuestionKit.applyConstraints = function() {
 		var failed = [];
-		var passed = [];
 		
 		for (var key in QuestionKit.currentConstraints) {
 			var constraints = QuestionKit.currentConstraints[key];
@@ -333,13 +331,10 @@ requirejs(["material", "jquery"], function(mdc) {
 				var value = QuestionKit.currentAnswers[constraint['key']];
 				
 				if (constraint['operator'] == 'in') {
-					
 					if (value == undefined) {
 						failed.push(key)
 					} else if (value.indexOf(constraint['value']) == -1) {
 						failed.push(key)
-					} else {
-						passed.push(key)
 					}
 				} else if (constraint['operator'] == '=') {
 					if (value != constraint['value']) {
@@ -350,12 +345,6 @@ requirejs(["material", "jquery"], function(mdc) {
 					console.log(constraint);
 				}
 			}
-		}
-
-		for (var key of passed) {
-			failed = $.grep(failed, function(item) {
-				return item != key;
-			});
 		}
 		
 		for (var item of QuestionKit.currentDefinition) {
