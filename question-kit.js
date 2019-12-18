@@ -201,8 +201,8 @@ requirejs(dependencies, function(mdc) {
                 }
             }
 
-            itemsHtml += '<button class="mdc-button mdc-button--raised mt-3" id="question_kit_update_report_button">';
-            itemsHtml += '  <span class="mdc-button__label">Update Report</span>';
+            itemsHtml += '<button class="mdc-button mdc-button--raised mt-3" id="question_kit_update_form">';
+            itemsHtml += '  <span class="mdc-button__label">Update</span>';
             itemsHtml += '</button>';
 
             itemsHtml += '</div>';
@@ -260,7 +260,7 @@ requirejs(dependencies, function(mdc) {
                     });
                 });
                 
-                $("#question_kit_update_report_button").click(function(eventObj) {
+                $("#question_kit_update_form").click(function(eventObj) {
                     eventObj.preventDefault();
                     
                     QuestionKit.submitUpdates(options['onUpdate']);
@@ -420,6 +420,14 @@ requirejs(dependencies, function(mdc) {
                 QuestionKit.renderQuestions(questions, options, function() {
                     QuestionKit.loadValues(options['values'], function() {
                         QuestionKit.applyConstraints();
+                        
+                        if (options['update_button_name'] != undefined) {
+                        	$("#question_kit_update_form").text(options['update_button_name']);
+                        }
+                                                
+                        if (options['editable'] == false) {
+                        	$("#question_kit_update_form").hide();
+                        }
                     });
                 });
             });
