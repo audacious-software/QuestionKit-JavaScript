@@ -33,12 +33,20 @@ requirejs(dependencies, function(mdc) {
     
     QuestionKit.cardRenderers = {};
 
+    QuestionKit.cardRenderers['read-only-text'] = function(definition) {
+        var output = '';
+        
+        output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['text']) + '</h6>';
+        
+        return output;
+    }
+
     QuestionKit.cardRenderers['single-line'] = function(definition) {
         var output = '';
         
         output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['prompt']) + '</h6>';
         
-        output += '<div st>';
+        output += '<div>';
         output += '  <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label" style="width: 100%;">';
         output += '    <input type="text" id="' + definition['key'] + '" class="mdc-text-field__input" />';
         output += '    <div class="mdc-notched-outline">';
@@ -146,7 +154,6 @@ requirejs(dependencies, function(mdc) {
         return '<pre>' + JSON.stringify(definition, null, 2) + '</pre>';    
     }
 
-
     QuestionKit.renderQuestions = function(questions, options, onRendered) {
         onRendered();
     };
@@ -174,8 +181,6 @@ requirejs(dependencies, function(mdc) {
     QuestionKit.currentDefinition = [];
     
     QuestionKit.loadQuestions = function(options, definitionUrl, onLoaded) {
-    	console.log("QK JQ: " + $);
-    	
     	var disabled = options["editable"] != true;
     	
         $.get(definitionUrl, function(data) {
@@ -185,6 +190,10 @@ requirejs(dependencies, function(mdc) {
 
             for (var i = 0; i < data.length; i++) {
                 var sequence = data[i];
+                
+                if (sequence['definition'] == undefined) {
+                	sequence['definition'] = sequence['prompts'];
+                }
                 
                 for (var j = 0; j < sequence['definition'].length; j++) {
                     var item = sequence['definition'][j];
@@ -196,7 +205,7 @@ requirejs(dependencies, function(mdc) {
                     var constraints = item['constraints'];
                     
                     if (constraints != undefined && constraints.length > 0) {
-                        QuestionKit.registerConstraint(item["key"], constraints);
+                        QuestionKit.registerConstraint(item["key"], constraints, item['constraint-matches']);
                     }
                 }
             }
@@ -206,7 +215,7 @@ requirejs(dependencies, function(mdc) {
             itemsHtml += '</button>';
 
             itemsHtml += '</div>';
-
+            
             container.append(itemsHtml);
 
             window.setTimeout(function() {
@@ -360,13 +369,25 @@ requirejs(dependencies, function(mdc) {
         QuestionKit.applyConstraints();
     }
 
-    QuestionKit.registerConstraint = function(key, constraints) {
+    QuestionKit.registerConstraint = function(key, constraints, matchType) {
+    	if (matchType == undefined) {
+    		matchtype = 'all';
+    	}
+    	
         if (QuestionKit.currentConstraints == undefined) {
             QuestionKit.currentConstraints = {};
         }
         
         if (QuestionKit.currentConstraints[key] == undefined) {
             QuestionKit.currentConstraints[key] = [];
+        }
+
+        if (QuestionKit.currentConstraintMatchType == undefined) {
+            QuestionKit.currentConstraintMatchType = {};
+        }
+
+        if (QuestionKit.currentConstraintMatchType[key] == undefined) {
+            QuestionKit.currentConstraintMatchType[key] = matchType;
         }
         
         for (var constraint of constraints) {
@@ -375,40 +396,79 @@ requirejs(dependencies, function(mdc) {
     }
     
     QuestionKit.applyConstraints = function() {
-        var failed = [];
+		var failed = [];
+
+		for (var key in QuestionKit.currentConstraints) {
+			let matchType = QuestionKit.currentConstraintMatchType[key];
         
-        for (var key in QuestionKit.currentConstraints) {
-            var constraints = QuestionKit.currentConstraints[key];
-            
-            for (var constraint of constraints) {
-                var value = QuestionKit.currentAnswers[constraint['key']];
-                
-                if (constraint['operator'] == 'in') {
-                    if (value == undefined) {
-                        failed.push(key)
-                    } else if (value.indexOf(constraint['value']) == -1) {
-                        failed.push(key)
-                    }
-                } else if (constraint['operator'] == '=') {
-                    if (value != constraint['value']) {
-                        failed.push(key)
-                    }
-                } else {
-                    console.log('TODO');
-                    console.log(constraint);
-                }
-            }
-        }
-        
-        for (var item of QuestionKit.currentDefinition) {
-            var key = item['key'];
-            
-            if (failed.indexOf(key) == -1) {
-                $("#question_kit_container_" + key).show();
-            } else {
-                $("#question_kit_container_" + key).hide();
-            }
-        }
+			if (matchType == 'any') {
+				var success = false;				
+				
+				var constraints = QuestionKit.currentConstraints[key];
+		
+				for (var constraint of constraints) {
+					var value = QuestionKit.currentAnswers[constraint['key']];
+					
+					if (value != undefined) {
+						if (constraint['operator'] == 'in') {
+							if (value.indexOf(constraint['value']) != -1) {
+								success = true;
+							}
+						} else if (constraint['operator'] == '=') {
+							if (value == constraint['value']) {
+								success = true;
+							}
+						} else if (constraint['operator'] == '!=') {
+							if (value != constraint['value']) {
+								success = true;
+							}
+						} else {
+							console.log('TODO');
+							console.log(constraint);
+						}
+					}
+				}
+				
+				if (success == false) {
+					failed.push(key)
+				}
+			} else {
+				var constraints = QuestionKit.currentConstraints[key];
+		
+				for (var constraint of constraints) {
+					var value = QuestionKit.currentAnswers[constraint['key']];
+			
+					if (constraint['operator'] == 'in') {
+						if (value == undefined) {
+							failed.push(key);
+						} else if (value.indexOf(constraint['value']) == -1) {
+							failed.push(key);
+						}
+					} else if (constraint['operator'] == '=') {
+						if (value != constraint['value']) {
+							failed.push(key);
+						}
+					} else if (constraint['operator'] == '!=') {
+						if (value == constraint['value']) {
+							failed.push(key);
+						}
+					} else {
+						console.log('TODO');
+						console.log(constraint);
+					}
+				}
+			}
+		}
+
+		for (var item of QuestionKit.currentDefinition) {
+			var key = item['key'];
+	
+			if (failed.indexOf(key) == -1) {
+				$("#question_kit_container_" + key).show();
+			} else {
+				$("#question_kit_container_" + key).hide();
+			}
+		}
     };
     
     QuestionKit.initialize = function(options) {
