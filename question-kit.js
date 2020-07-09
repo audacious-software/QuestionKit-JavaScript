@@ -12,12 +12,19 @@ requirejs.config({
 
 var dependencies = ["material", "jquery"];
 
+var translations = {
+	"label_required": {
+		"en": "Required",
+		"es": "Necesario",
+	}
+};
+
 requirejs(dependencies, function(mdc) {
     var QuestionKit = {};
     
     QuestionKit.valueForLabel = function(labelDefinition) {
-        var language = (navigator.language || navigator.systemLanguage || navigator.userLanguage || 'en').substr(0, 2).toLowerCase();
-        
+        var language = (window.questionKitLanguage || navigator.language || navigator.systemLanguage || navigator.userLanguage || 'en').substr(0, 2).toLowerCase();
+       
         var value = labelDefinition[language];
         
         if (value == undefined) {
@@ -26,6 +33,22 @@ requirejs(dependencies, function(mdc) {
         
         if (value == undefined) {
             value = JSON.stringify(labelDefinition);
+        }
+        
+        return value;
+    }
+
+    QuestionKit.valueForTerm = function(term) {
+        var language = (window.questionKitLanguage || navigator.language || navigator.systemLanguage || navigator.userLanguage || 'en').substr(0, 2).toLowerCase();
+        
+        var value = translations[term][language];
+        
+        if (value == undefined) {
+            value = translations[term]['en'];
+        }
+        
+        if (value == undefined) {
+            value = JSON.stringify(term);
         }
         
         return value;
@@ -49,7 +72,7 @@ requirejs(dependencies, function(mdc) {
         output += '</div>';
 
         if (definition["required"]) {
-            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">Required</p>';
+            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
         }
         
         return output;
@@ -71,7 +94,7 @@ requirejs(dependencies, function(mdc) {
         output += '</div>';
 
         if (definition["required"]) {
-            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">Required</p>';
+            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
         }
         
         return output;
@@ -104,7 +127,7 @@ requirejs(dependencies, function(mdc) {
         }
 
         if (definition["required"]) {
-            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">Required</p>';
+            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
         }
         
         return output;
@@ -136,7 +159,7 @@ requirejs(dependencies, function(mdc) {
         }
 
         if (definition["required"]) {
-            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">Required</p>';
+            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
         }
         
         return output;
@@ -174,8 +197,6 @@ requirejs(dependencies, function(mdc) {
     QuestionKit.currentDefinition = [];
     
     QuestionKit.loadQuestions = function(options, definitionUrl, onLoaded) {
-    	console.log("QK JQ: " + $);
-    	
     	var disabled = options["editable"] != true;
     	
         $.get(definitionUrl, function(data) {
@@ -412,9 +433,6 @@ requirejs(dependencies, function(mdc) {
     };
     
     QuestionKit.initialize = function(options) {
-    	console.log("options");
-    	console.log(options);
-    	
         if (options['definition'] != undefined) {
             QuestionKit.loadQuestions(options, options['definition'], function(questions) {
                 QuestionKit.renderQuestions(questions, options, function() {
