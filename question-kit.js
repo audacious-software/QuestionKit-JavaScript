@@ -16,6 +16,66 @@ var translations = {
     "label_required": {
         "en": "Required",
         "es": "Necesario",
+    },
+    "label_month": {
+    	"en": "Month",
+    	"es": "Mes"
+    },
+    "label_day": {
+    	"en": "Day",
+    	"es": "Dia"
+    },
+    "label_year": {
+    	"en": "Year",
+    	"es": "Año"
+    },
+    "month_jan": {
+    	"en": "January",
+    	"es": "Enero"
+    },
+    "month_feb": {
+    	"en": "February",
+    	"es": "Febrero"
+    },
+    "month_mar": {
+    	"en": "March",
+    	"es": "Marzo"
+    },
+    "month_apr": {
+    	"en": "April",
+    	"es": "Abril"
+    },
+    "month_may": {
+    	"en": "May",
+    	"es": "Mayo"
+    },
+    "month_jun": {
+    	"en": "June",
+    	"es": "Junio"
+    },
+    "month_jul": {
+    	"en": "July",
+    	"es": "Julio"
+    },
+    "month_aug": {
+    	"en": "August",
+    	"es": "Agosto"
+    },
+    "month_sep": {
+    	"en": "September",
+    	"es": "Septiembre"
+    },
+    "month_oct": {
+    	"en": "October",
+    	"es": "Octubre"
+    },
+    "month_nov": {
+    	"en": "November",
+    	"es": "Noviembre"
+    },
+    "month_dec": {
+    	"en": "December",
+    	"es": "Diciembre"
     }
 };
 
@@ -185,11 +245,11 @@ requirejs(dependencies, function(mdc) {
 
         output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['prompt']) + '</h6>';
 
-        output += '<div class="mdc-layout-grid">';
+        output += '<div class="mdc-layout-grid mdc-select-date" id="' + definition['key'] + '">';
         output += '  <div class="mdc-layout-grid__inner">';
 
         output += '    <div class="mdc-layout-grid__cell">';
-        output += '      <div class="mdc-select mdc-select--outlined">';
+        output += '      <div class="mdc-select mdc-select--outlined mdc-select--month">';
         output += '        <i class="mdc-select__dropdown-icon"></i>';
         output += '        <select class="mdc-select__native-control">';
         output += '          <option value="" disabled selected></option>';
@@ -217,7 +277,7 @@ requirejs(dependencies, function(mdc) {
         output += '    </div>';
         
         output += '    <div class="mdc-layout-grid__cell">';
-        output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label" style="width: 100%;">';
+        output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--day" style="width: 100%;">';
         output += '        <input type="number" id="' + definition['key'] + '_day" class="mdc-text-field__input" min="1" max="31" />';
         output += '        <div class="mdc-notched-outline">';
         output += '          <div class="mdc-notched-outline__leading"></div>';
@@ -229,7 +289,7 @@ requirejs(dependencies, function(mdc) {
         output += '       </div>';
         output += '    </div>';
         output += '    <div class="mdc-layout-grid__cell">';
-        output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label" style="width: 100%;">';
+        output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--year" style="width: 100%;">';
         output += '        <input type="number" id="' + definition['key'] + '_year" class="mdc-text-field__input" />';
         output += '        <div class="mdc-notched-outline">';
         output += '          <div class="mdc-notched-outline__leading"></div>';
@@ -390,7 +450,7 @@ requirejs(dependencies, function(mdc) {
                 });
             });
 
-            $('.mdc-select').each(function(index) {
+            $('.mdc-select').not('.mdc-select--month').each(function(index) {
                 var select = mdc.select.MDCSelect.attachTo($(this).get(0));
 
                 select.disabled = disabled;
@@ -402,6 +462,52 @@ requirejs(dependencies, function(mdc) {
                     QuestionKit.updateValue(name, value);
                 });
             });
+
+            $('.mdc-select-date').each(function(index) {
+            	let key = $(this).attr('id');
+            	
+                let monthSelect = mdc.select.MDCSelect.attachTo($(this).find('.mdc-select--month').get(0));
+                monthSelect.disabled = disabled;
+
+                let dayField = mdc.textField.MDCTextField.attachTo($(this).find('.mdc-text-field--day').get(0));
+                dayField.disabled = disabled;
+
+                let yearField = mdc.textField.MDCTextField.attachTo($(this).find('.mdc-text-field--year').get(0));
+                yearField.disabled = disabled;
+            	
+            	let updateDate = function() {
+                    var month = monthSelect.value;
+                    var day = dayField.value;
+                    var year = yearField.value;
+                    
+                    if (month.length > 0 && day.length > 0 && year.length > 0) {
+						while (month.length < 2) {
+							month = '0' + month;
+						}
+
+						while (day.length < 2) {
+							day = '0' + day;
+						}
+
+						while (year.length < 4) {
+							year = '0' + year;
+						}
+                    
+    	                QuestionKit.updateValue(key, year + '-' + month + '-' + day);
+    	            } else {
+    	            	console.log("Incomplete Selection");
+    	            }
+            	};
+
+                $(this).find('select').change(function(eventObj) {
+					updateDate();
+				});
+				
+                $(this).find('input[type="number"]').change(function(eventObj) {
+					updateDate();
+                });
+            });
+
 
             if (options['save_assessment_button'] != undefined) {
                 if ($('#' + options['save_assessment_button']).size() > 0) {
@@ -469,6 +575,18 @@ requirejs(dependencies, function(mdc) {
                         $('input#' + key).val(value);
                     } else if (item['prompt-type'] == 'multi-line') {
                         $('textarea#' + key).val(value);
+                    } else if (item['prompt-type'] == 'multi-line') {
+                        $('textarea#' + key).val(value);
+                    } else if (item['prompt-type'] == 'date-select') {
+                    	var tokens = value.split('-');
+                    	
+                    	var year = parseInt(tokens[0]);
+                    	var month = parseInt(tokens[1]);
+                    	var day = parseInt(tokens[2]);
+                    
+                        $('#' + key + ' select').val(''+ month);
+                        $('#' + key + '_day').val(''+ day);
+                        $('#' + key + '_year').val(''+ year);
                     }
                 }
             }
