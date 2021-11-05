@@ -595,7 +595,7 @@ requirejs(dependencies, function(mdc) {
         }
 
         if ((typeof values) == "string") {
-            $.get(valuesUrl, loaded);
+            $.get(values, loaded);
         } else {
             loaded(values);
         }
