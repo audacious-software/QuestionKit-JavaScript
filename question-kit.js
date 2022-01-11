@@ -1,16 +1,23 @@
-requirejs.config({
-    shim: {
-        jquery: {
-            exports: "$"
-        }
-    },
-    paths: {
-        material: "vendor/mdc-web/material-components-web.min",
-        jquery: "vendor/jquery-reuse"
-    }
-});
+if (requirejs.s.contexts._.config.paths['material'] == undefined || requirejs.s.contexts._.config.paths['jquery'] == undefined) {
+	requirejs.config({
+		shim: {
+			jquery: {
+				exports: "$"
+			},
+			recaptcha: {
+				exports: "grecaptcha"
+			}
+		},
+		paths: {
+			material: "./vendor/mdc-web/material-components-web.min",
+			libphonenumber: "./vendor/libphonenumber-max",
+			jquery: "./vendor/jquery-reuse",
+			recaptcha: "//www.google.com/recaptcha/api",
+		}
+	});
+}
 
-var dependencies = ["material", "jquery"];
+var dependencies = ["material", "libphonenumber", "recaptcha", "jquery"];
 
 var translations = {
     "label_required": {
@@ -76,12 +83,39 @@ var translations = {
     "month_dec": {
     	"en": "December",
     	"es": "Diciembre"
+    },
+    "label_hour": {
+    	"en": "Hour",
+    	"es": "Hora"
+    },
+    "label_minute": {
+    	"en": "Minute",
+    	"es": "Minuto"
+    },
+    "label_am_pm": {
+    	"en": "AM / PM",
+    	"es": "a.m. / p.m."
+    },
+    "label_am": {
+    	"en": "AM",
+    	"es": "a.m."
+    },
+    "label_pm": {
+    	"en": "PM",
+    	"es": "p.m."
     }
 };
 
-requirejs(dependencies, function(mdc) {
-	console.log('MDC');
+requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
+	console.log('MDC QK');
 	console.log(mdc);
+
+	console.log('PHONE QK');
+	console.log(phonenumber);
+
+	console.log('RECAPTCHA QK');
+	console.log(recaptcha);
+	console.log(grecaptcha);
 	
     var QuestionKit = {};
 
@@ -131,13 +165,21 @@ requirejs(dependencies, function(mdc) {
         return output;
     }
 
+    QuestionKit.cardRenderers['captcha'] = function(definition) {
+        var output = '';
+
+        output += '<div class="g-recaptcha" data-sitekey="' + definition.site_key + '" id="' + definition['key'] + '"></div>';
+
+        return output;
+    }
+
     QuestionKit.cardRenderers['single-line'] = function(definition) {
         var output = '';
 
         output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['prompt']) + '</h6>';
 
         output += '<div>';
-        output += '  <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label" style="width: 100%;">';
+        output += '  <div class="qk-text-field mdc-text-field mdc-text-field--outlined mdc-text-field--no-label" style="width: 100%;">';
         output += '    <input type="text" id="' + definition['key'] + '" class="mdc-text-field__input" />';
         output += '    <div class="mdc-notched-outline">';
         output += '      <div class="mdc-notched-outline__leading"></div>';
@@ -146,9 +188,43 @@ requirejs(dependencies, function(mdc) {
         output += '  </div>';
         output += '</div>';
 
-        if (definition["required"]) {
-            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
+        return output;
+    }
+
+    QuestionKit.cardRenderers['phone-number'] = function(definition) {
+        var output = '';
+        
+        let region = definition.region
+        
+        if (region === undefined) {
+        	region = 'US'
         }
+
+        output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['prompt']) + '</h6>';
+        
+        if (definition.lock_minute !== undefined) {
+			output += '<div>';
+			output += '  <div class="qk-phone-number mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--with-trailing-icon mdc-text-field--disabled" style="width: 100%;" data-region="' + region + '">';
+			output += '    <input type="text" id="' + definition['key'] + '" class="mdc-text-field__input" value="' + definition.lock_minute + '" disabled/>';
+			output += '    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" role="button">phone_disabled</i>';
+			output += '    <div class="mdc-notched-outline">';
+			output += '      <div class="mdc-notched-outline__leading"></div>';
+			output += '      <div class="mdc-notched-outline__trailing"></div>';
+			output += '    </div>';
+			output += '  </div>';
+			output += '</div>';
+        } else {
+			output += '<div>';
+			output += '  <div class="qk-phone-number mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--with-trailing-icon" style="width: 100%;" data-region="' + region + '">';
+			output += '    <input type="text" id="' + definition['key'] + '" class="mdc-text-field__input" />';
+			output += '    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" role="button">phone_disabled</i>';
+			output += '    <div class="mdc-notched-outline">';
+			output += '      <div class="mdc-notched-outline__leading"></div>';
+			output += '      <div class="mdc-notched-outline__trailing"></div>';
+			output += '    </div>';
+			output += '  </div>';
+			output += '</div>';
+		}
 
         return output;
     }
@@ -159,7 +235,7 @@ requirejs(dependencies, function(mdc) {
         output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['prompt']) + '</h6>';
 
         output += '<div>';
-        output += '  <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea mdc-text-field--no-label" style="width: 100%;">';
+        output += '  <div class="qk-text-field mdc-text-field mdc-text-field--outlined mdc-text-field--textarea mdc-text-field--no-label" style="width: 100%;">';
         output += '    <textarea class="mdc-text-field__input" rows="4" id="' + definition['key'] + '" ></textarea>';
         output += '    <div class="mdc-notched-outline">';
         output += '      <div class="mdc-notched-outline__leading"></div>';
@@ -167,10 +243,6 @@ requirejs(dependencies, function(mdc) {
         output += '    </div>';
         output += '  </div>';
         output += '</div>';
-
-        if (definition["required"]) {
-            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
-        }
 
         return output;
     }
@@ -201,10 +273,6 @@ requirejs(dependencies, function(mdc) {
             output += '</div>';
         }
 
-        if (definition["required"]) {
-            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
-        }
-
         return output;
     }
 
@@ -233,10 +301,6 @@ requirejs(dependencies, function(mdc) {
             output += '</div>';
         }
 
-        if (definition["required"]) {
-            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
-        }
-
         return output;
     }
 
@@ -245,37 +309,86 @@ requirejs(dependencies, function(mdc) {
 
         output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['prompt']) + '</h6>';
 
-        output += '<div class="mdc-layout-grid mdc-select-date" id="' + definition['key'] + '">';
+        output += '<div class="mdc-layout-grid qk-select-date" id="' + definition['key'] + '">';
         output += '  <div class="mdc-layout-grid__inner">';
-
-        output += '    <div class="mdc-layout-grid__cell">';
-        output += '      <div class="mdc-select mdc-select--outlined mdc-select--month">';
-        output += '        <i class="mdc-select__dropdown-icon"></i>';
-        output += '        <select class="mdc-select__native-control">';
-        output += '          <option value="" disabled selected></option>';
-        output += '          <option value="1">' + QuestionKit.valueForTerm('month_jan') + '</option>';
-        output += '          <option value="2">' + QuestionKit.valueForTerm('month_feb') + '</option>';
-        output += '          <option value="3">' + QuestionKit.valueForTerm('month_mar') + '</option>';
-        output += '          <option value="4">' + QuestionKit.valueForTerm('month_apr') + '</option>';
-        output += '          <option value="5">' + QuestionKit.valueForTerm('month_may') + '</option>';
-        output += '          <option value="6">' + QuestionKit.valueForTerm('month_jun') + '</option>';
-        output += '          <option value="7">' + QuestionKit.valueForTerm('month_jul') + '</option>';
-        output += '          <option value="8">' + QuestionKit.valueForTerm('month_aug') + '</option>';
-        output += '          <option value="9">' + QuestionKit.valueForTerm('month_sep') + '</option>';
-        output += '          <option value="10">' + QuestionKit.valueForTerm('month_oct') + '</option>';
-        output += '          <option value="11">' + QuestionKit.valueForTerm('month_nov') + '</option>';
-        output += '          <option value="12">' + QuestionKit.valueForTerm('month_dec') + '</option>';
-        output += '        </select>';
-        output += '        <div class="mdc-notched-outline">';
-        output += '          <div class="mdc-notched-outline__leading"></div>';
-        output += '          <div class="mdc-notched-outline__notch">';
-        output += '            <label class="mdc-floating-label">' + QuestionKit.valueForTerm('label_month') + '</label>';
-        output += '          </div>';
-        output += '          <div class="mdc-notched-outline__trailing"></div>';
-        output += '        </div>';
+        output += '    <div class="mdc-layout-grid__cell mdc-select mdc-select--outlined mdc-select--month">';
+        output += '      <div class="mdc-select__anchor" aria-labelledby="outlined-select-label">';
+        output += '        <span class="mdc-notched-outline">';
+        output += '          <span class="mdc-notched-outline__leading"></span>';
+        output += '          <span class="mdc-notched-outline__notch">';
+        output += '            <span id="outlined-select-label" class="mdc-floating-label">' + QuestionKit.valueForTerm('label_month') + '</span>';
+        output += '          </span>';
+        output += '          <span class="mdc-notched-outline__trailing"></span>';
+        output += '        </span>';
+        output += '        <span class="mdc-select__selected-text-container">';
+        output += '          <span class="mdc-select__selected-text"></span>';
+        output += '        </span>';
+        output += '        <span class="mdc-select__dropdown-icon">';
+        output += '          <svg class="mdc-select__dropdown-icon-graphic" viewBox="7 10 10 5" focusable="false">';
+        output += '            <polygon class="mdc-select__dropdown-icon-inactive" stroke="none" fill-rule="evenodd" points="7 10 12 15 17 10">';
+        output += '            </polygon>';
+        output += '            <polygon class="mdc-select__dropdown-icon-active" stroke="none" fill-rule="evenodd" points="7 15 12 10 17 15">';
+        output += '            </polygon>';
+        output += '          </svg>';
+        output += '        </span>';
+        output += '      </div>';
+        output += '      <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">';
+        output += '        <ul class="mdc-deprecated-list" role="listbox" aria-label="Month Listbox">';
+        output += '          <li class="mdc-deprecated-list-item mdc-list-item--selected" aria-selected="true" data-value="" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="1" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_jan') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="2" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_feb') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="3" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_mar') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="4" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_apr') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="5" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_may') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="6" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_jun') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="7" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_jul') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="8" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_aug') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="9" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_sep') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="10" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_oct') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="11" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_nov') + '</span>';
+        output += '          </li>';
+        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="12" role="option">';
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('month_dec') + '</span>';
+        output += '          </li>';
+        output += '        </ul>';
         output += '      </div>';
         output += '    </div>';
-        
+
         output += '    <div class="mdc-layout-grid__cell">';
         output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--day" style="width: 100%;">';
         output += '        <input type="number" id="' + definition['key'] + '_day" class="mdc-text-field__input" min="1" max="31" />';
@@ -303,9 +416,133 @@ requirejs(dependencies, function(mdc) {
         output += '  </div>';
         output += '</div>';
 
-        if (definition["required"]) {
-            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
+        return output;
+    }
+
+    QuestionKit.cardRenderers['time-select-12-hour'] = function(definition) {
+        var output = '';
+
+        let defaultHour = '';
+        let defaultMinute = '';
+        let defaultAmPm = '';
+        
+        if (definition.defaults !== undefined) {
+        	if (definition.defaults.hour !== undefined) {
+        		defaultHour = definition.defaults.hour;
+        	}
+
+        	if (definition.defaults.minute !== undefined) {
+        		defaultMinute = definition.defaults.minute;
+        	}
+
+        	if (definition.defaults.am_pm !== undefined) {
+        		defaultAmPm = definition.defaults.am_pm;
+        	}
         }
+
+        output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['prompt']) + '</h6>';
+
+        output += '<div class="mdc-layout-grid qk-select-time-12-hour" id="' + definition['key'] + '" data-default-ampm="' + defaultAmPm + '">';
+        output += '  <div class="mdc-layout-grid__inner">';
+
+        output += '    <div class="mdc-layout-grid__cell">';
+        output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--hour" style="width: 100%;">';
+        output += '        <input type="number" id="' + definition['key'] + '_day" class="mdc-text-field__input" min="1" max="12" value="' + defaultHour + '" />';
+        output += '        <div class="mdc-notched-outline">';
+        output += '          <div class="mdc-notched-outline__leading"></div>';
+        output += '           <span class="mdc-notched-outline__notch">';
+        output += '             <span class="mdc-floating-label">' + QuestionKit.valueForTerm('label_hour') + '</span>';
+        output += '           </span>';
+        output += '          <div class="mdc-notched-outline__trailing"></div>';
+        output += '        </div>';
+        output += '       </div>';
+        output += '    </div>';
+        
+        if (definition.lock_minute !== undefined) {
+			output += '    <div class="mdc-layout-grid__cell">';
+			output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--minute mdc-text-field--disabled" style="width: 100%;">';
+			output += '        <input type="number" id="' + definition['key'] + '_minute" class="mdc-text-field__input" min="0" max="59"  value="' + definition.lock_minute + '" disabled />';
+			output += '        <div class="mdc-notched-outline">';
+			output += '          <div class="mdc-notched-outline__leading"></div>';
+			output += '           <span class="mdc-notched-outline__notch">';
+			output += '             <span class="mdc-floating-label" id="my-label-id">' + QuestionKit.valueForTerm('label_minute') + '</span>';
+			output += '           </span>';
+			output += '          <div class="mdc-notched-outline__trailing"></div>';
+			output += '        </div>';
+			output += '       </div>';
+			output += '    </div>';
+		} else {
+			output += '    <div class="mdc-layout-grid__cell">';
+			output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--minute" style="width: 100%;">';
+			output += '        <input type="number" id="' + definition['key'] + '_minute" class="mdc-text-field__input" min="0" max="59"  value="' + defaultMinute + '" />';
+			output += '        <div class="mdc-notched-outline">';
+			output += '          <div class="mdc-notched-outline__leading"></div>';
+			output += '           <span class="mdc-notched-outline__notch">';
+			output += '             <span class="mdc-floating-label" id="my-label-id">' + QuestionKit.valueForTerm('label_minute') + '</span>';
+			output += '           </span>';
+			output += '          <div class="mdc-notched-outline__trailing"></div>';
+			output += '        </div>';
+			output += '       </div>';
+			output += '    </div>';
+		}		
+
+        output += '    <div class="mdc-layout-grid__cell mdc-select mdc-select--outlined mdc-select--am-pm">';
+        output += '      <div class="mdc-select__anchor" aria-labelledby="outlined-select-label">';
+        output += '        <span class="mdc-notched-outline">';
+        output += '          <span class="mdc-notched-outline__leading"></span>';
+        output += '          <span class="mdc-notched-outline__notch">';
+        output += '            <span id="outlined-select-label" class="mdc-floating-label">' + QuestionKit.valueForTerm('label_am_pm') + '</span>';
+        output += '          </span>';
+        output += '          <span class="mdc-notched-outline__trailing"></span>';
+        output += '        </span>';
+        output += '        <span class="mdc-select__selected-text-container">';
+
+        if (defaultAmPm == "am") {
+	        output += '          <span class="mdc-select__selected-text">' + QuestionKit.valueForTerm('label_am') + '</span>';
+	    } else if (defaultAmPm == "pm") {
+	        output += '          <span class="mdc-select__selected-text">' + QuestionKit.valueForTerm('label_pm') + '</span>';
+	    } else {
+	        output += '          <span class="mdc-select__selected-text"></span>';
+	    }
+	    
+        output += '        </span>';
+        output += '        <span class="mdc-select__dropdown-icon">';
+        output += '          <svg class="mdc-select__dropdown-icon-graphic" viewBox="7 10 10 5" focusable="false">';
+        output += '            <polygon class="mdc-select__dropdown-icon-inactive" stroke="none" fill-rule="evenodd" points="7 10 12 15 17 10">';
+        output += '            </polygon>';
+        output += '            <polygon class="mdc-select__dropdown-icon-active" stroke="none" fill-rule="evenodd" points="7 15 12 10 17 15">';
+        output += '            </polygon>';
+        output += '          </svg>';
+        output += '        </span>';
+        output += '      </div>';
+        output += '      <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">';
+        output += '        <ul class="mdc-deprecated-list" role="listbox" aria-label="Month Listbox">';
+        
+        if (defaultAmPm == "am") {
+	        output += '          <li class="mdc-deprecated-list-item mdc-list-item--selected" data-value="am" aria-selected="true">';
+	    } else { 
+	        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="am">';
+	    }
+	    
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('label_am') + '</span>';
+        output += '          </li>';
+
+        if (defaultAmPm == "pm") {
+	        output += '          <li class="mdc-deprecated-list-item mdc-list-item--selected" data-value="pm" aria-selected="true">';
+	    } else { 
+	        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="pm">';
+	    }
+
+        output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
+        output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('label_pm') + '</span>';
+        output += '          </li>';
+        output += '        </ul>';
+        output += '      </div>';
+        output += '    </div>';
+
+        output += '  </div>';
+        output += '</div>';
 
         return output;
     }
@@ -333,6 +570,14 @@ requirejs(dependencies, function(mdc) {
 
         output += renderer(definition);
 
+        if (definition["caption"]) {
+            output += '  <p class="mdc-typography--caption">' + QuestionKit.valueForLabel(definition['caption']) + '</p>';
+        }
+
+        if (definition["required"]) {
+            output += '  <p class="mdc-typography--caption" style="text-align: right; margin-bottom: 0; color: #6100EE;">' + QuestionKit.valueForTerm('label_required') + '</p>';
+        }
+
         output += '</div>';
 
         return output;
@@ -341,7 +586,11 @@ requirejs(dependencies, function(mdc) {
     QuestionKit.currentDefinition = [];
 
     QuestionKit.loadQuestionsFromData = function(options, data, onLoaded) {
-        var disabled = options["editable"] != true;
+    	if (Array.isArray(data) === false) {
+    		data = [data]
+    	}
+    	
+        var disabled = options["editable"] === false;
 
         var container = $(options["element"]);
 
@@ -400,7 +649,7 @@ requirejs(dependencies, function(mdc) {
         container.append(itemsHtml);
 
         window.setTimeout(function() {
-            $('.mdc-text-field').each(function(index) {
+            $('.qk-text-field').each(function(index) {
                 var field = mdc.textField.MDCTextField.attachTo($(this).get(0));
 
                 field.disabled = disabled;
@@ -450,23 +699,23 @@ requirejs(dependencies, function(mdc) {
                 });
             });
 
-            $('.mdc-select').not('.mdc-select--month').each(function(index) {
-                var select = mdc.select.MDCSelect.attachTo($(this).get(0));
+            $('.mdc-select').not('.mdc-select--month').not('.mdc-select--am-pm').each(function(index) {
+                let select = mdc.select.MDCSelect.attachTo($(this).get(0));
 
                 select.disabled = disabled;
 
-                $(this).find('select').change(function(eventObj) {
-                    var name = $(this).attr('id');
-                    var value = $(this).val();
+				select.listen('MDCSelect:change', () => {
+                    var name = $(this).attr('id')
+                    var value = select.value
 
                     QuestionKit.updateValue(name, value);
-                });
+				});
             });
 
-            $('.mdc-select-date').each(function(index) {
+            $('.qk-select-date').each(function(index) {
             	let key = $(this).attr('id');
             	
-                let monthSelect = mdc.select.MDCSelect.attachTo($(this).find('.mdc-select--month').get(0));
+                const monthSelect = mdc.select.MDCSelect.attachTo($(this).find('.mdc-select--month').get(0));
                 monthSelect.disabled = disabled;
 
                 let dayField = mdc.textField.MDCTextField.attachTo($(this).find('.mdc-text-field--day').get(0));
@@ -499,15 +748,98 @@ requirejs(dependencies, function(mdc) {
     	            }
             	};
 
-                $(this).find('select').change(function(eventObj) {
+				monthSelect.listen('MDCSelect:change', () => {
 					updateDate();
 				});
-				
+
                 $(this).find('input[type="number"]').change(function(eventObj) {
 					updateDate();
                 });
             });
 
+            $('.qk-select-time-12-hour').each(function(index) {
+            	let key = $(this).attr('id');
+            	
+            	const defaultAmPm = $(this).attr('data-default-ampm');
+            	
+                const amPmSelect = mdc.select.MDCSelect.attachTo($(this).find('.mdc-select--am-pm').get(0));
+                amPmSelect.disabled = disabled;
+                amPmSelect.value = defaultAmPm
+                
+                let hourField = mdc.textField.MDCTextField.attachTo($(this).find('.mdc-text-field--hour').get(0));
+                hourField.disabled = disabled;
+
+                let minuteField = mdc.textField.MDCTextField.attachTo($(this).find('.mdc-text-field--minute').get(0));
+                minuteField.disabled = (minuteField.disabled || disabled);
+                
+            	let updateTime = function() {
+                    var amPm = amPmSelect.value;
+                    var hour = parseInt(hourField.value);
+                    var minute = parseInt(minuteField.value);
+
+                    if (amPm.length > 0 && isNaN(hour) == false && isNaN(minute) == false) {
+                    	if (amPm == 'pm' && hour !== 12) {
+                    		hour += 12
+                    	} else if (hour === 12 && amPm == 'am') {
+                    		hour = 0
+                    	}
+                    	
+                    	hour = "" + hour
+                    	minute = "" + minute
+                    	
+						while (hour.length < 2) {
+							hour = '0' + hour;
+						}
+
+						while (minute.length < 2) {
+							minute = '0' + minute;
+						}
+                    	
+    	                QuestionKit.updateValue(key, hour + ':' + minute);
+    	            } else {
+    	            	console.log("Incomplete Selection");
+    	            }
+            	};
+
+				amPmSelect.listen('MDCSelect:change', () => {
+					updateTime();
+				});
+
+                $(this).find('input[type="number"]').change(function(eventObj) {
+					updateTime();
+                });
+
+				updateTime();
+            });
+            
+            $('.qk-phone-number').each(function(index) {
+                var field = mdc.textField.MDCTextFieldIcon.attachTo($(this).get(0));
+
+                field.disabled = disabled;
+                
+                const region = $(this).attr('data-region')
+                
+                const icon = $(this).find('i.material-icons')
+
+                $(this).find('input[type="text"]').on("keyup change paste", function(eventObj) {
+                    var name = $(this).attr('id');
+                    var value = $(this).val();
+                    
+                    try {
+						const parsed = phonenumber.parsePhoneNumber(value, region)
+					
+						if (parsed.isValid()) {
+							icon.text('phone_enabled')
+
+							QuestionKit.updateValue(name, parsed.number);
+						} else {
+							icon.text('phone_disabled')
+						}
+					} catch(err) {
+						icon.text('phone_disabled')
+					}
+                });
+            });
 
             if (options['save_assessment_button'] != undefined) {
                 if ($('#' + options['save_assessment_button']).size() > 0) {
@@ -526,6 +858,17 @@ requirejs(dependencies, function(mdc) {
             if (options['update_button_name'] != undefined) {
                 $(updateButton).text(options['update_button_name']);
             }
+
+            $('.g-recaptcha').each(function(index) {
+				const name = $(this).attr('id');
+
+				recaptcha.render($(this).get(0), {
+					"sitekey": $(this).attr("data-sitekey"),
+					"callback": function(response) {
+						QuestionKit.updateValue(name, response);
+					}
+				});
+			});
 
             if (options['editable'] == false) {
                 $(updateButton).hide();
@@ -553,48 +896,64 @@ requirejs(dependencies, function(mdc) {
 
     QuestionKit.loadValues = function(values, onLoaded) {
         var loaded = function(data) {
-            console.log("LOADING VALUES:");
-            console.log(data);
+			QuestionKit.currentAnswers = {};
 
-            QuestionKit.currentAnswers = {};
+			for (var item of QuestionKit.currentDefinition) {
+				var key = item['key'];
+				var value = data[key];
 
-            for (var item of QuestionKit.currentDefinition) {
-                var key = item['key'];
-                var value = data[key];
+				if (value != undefined && value != '') {
+					QuestionKit.currentAnswers[key] = value;
 
-                if (value != undefined && value != '') {
-                    QuestionKit.currentAnswers[key] = value;
+					if (item['prompt-type'] == 'select-multiple') {
+						for (var selected of value) {
+							$('input[data-question-key="' + key + '"][value="' + selected + '"]').prop("checked", true);
+						}
+					} else if (item['prompt-type'] == 'select-one') {
+						$('input[name="' + key + '"][value="' + value + '"]').prop("checked", true);
+					} else if (item['prompt-type'] == 'single-line') {
+						$('input#' + key).val(value);
+					} else if (item['prompt-type'] == 'multi-line') {
+						$('textarea#' + key).val(value);
+					} else if (item['prompt-type'] == 'multi-line') {
+						$('textarea#' + key).val(value);
+					} else if (item['prompt-type'] == 'date-select') {
+						var tokens = value.split('-');
+					
+						var year = parseInt(tokens[0]);
+						var month = parseInt(tokens[1]);
+						var day = parseInt(tokens[2]);
+				
+						$('#' + key + ' select').val(''+ month);
+						$('#' + key + '_day').val(''+ day);
+						$('#' + key + '_year').val(''+ year);
+					} else if (item['prompt-type'] == 'time-select-12-hour') {
+						var tokens = value.split(':');
+						
+						var hour = parseInt(tokens[0]);
+						
+						if (hour > '12') {
+							$('#' + key + ' select').val('pm');
+							hour -= 12;
+						} else {
+							$('#' + key + ' select').val('am');
+						}
 
-                    if (item['prompt-type'] == 'select-multiple') {
-                        for (var selected of value) {
-                            $('input[data-question-key="' + key + '"][value="' + selected + '"]').prop("checked", true);
-                        }
-                    } else if (item['prompt-type'] == 'select-one') {
-                        $('input[name="' + key + '"][value="' + value + '"]').prop("checked", true);
-                    } else if (item['prompt-type'] == 'single-line') {
-                        $('input#' + key).val(value);
-                    } else if (item['prompt-type'] == 'multi-line') {
-                        $('textarea#' + key).val(value);
-                    } else if (item['prompt-type'] == 'multi-line') {
-                        $('textarea#' + key).val(value);
-                    } else if (item['prompt-type'] == 'date-select') {
-                    	var tokens = value.split('-');
-                    	
-                    	var year = parseInt(tokens[0]);
-                    	var month = parseInt(tokens[1]);
-                    	var day = parseInt(tokens[2]);
-                    
-                        $('#' + key + ' select').val(''+ month);
-                        $('#' + key + '_day').val(''+ day);
-                        $('#' + key + '_year').val(''+ year);
-                    }
-                }
-            }
+						var minute = parseInt(tokens[1]);
+				
+						$('#' + key + ' select').val(''+ month);
+						$('#' + key + '_minute').val(minute);
+						$('#' + key + '_hour').val(hour);
+					}
+				}
+			}
 
             onLoaded();
         }
-
-        if ((typeof values) == "string") {
+        
+        if (values === undefined || values === "") {
+            loaded({});
+        } else if ((typeof values) == "string") {
             $.get(values, loaded);
         } else {
             loaded(values);
@@ -610,7 +969,7 @@ requirejs(dependencies, function(mdc) {
     }
 
     QuestionKit.submitUpdates = function(onUpdate) {
-        var complete = true;
+        let missing = []
 
         for (var question of QuestionKit.currentDefinition) {
             if (question['required'] == true) {
@@ -618,23 +977,25 @@ requirejs(dependencies, function(mdc) {
 
                 if (value == undefined) {
                     console.log("COMPLETE CHECK: " + question['key'] + " UNDEFINED");
-                    complete = false;
+                    missing.push(question['key'])
                 } else if (value == null) {
                     console.log("COMPLETE CHECK: " + question['key'] + " NULL");
-                    complete = false;
+                    missing.push(question['key'])
                 } else if ($.type(value) === "string" && value.trim().length == 0) {
                     console.log("COMPLETE CHECK: " + question['key'] + " EMPTY STRING");
-                    complete = false;
+                    missing.push(question['key'])
                 } else if ($.type(value) === "array" && value.length == 0) {
                     console.log("COMPLETE CHECK: " + question['key'] + " EMPTY ARRAY");
-                    complete = false;
+                    missing.push(question['key'])
                 }
             }
         }
 
+        var complete = (missing.length == 0)
+
         console.log("COMPLETED: " + complete);
 
-        onUpdate(QuestionKit.currentAnswers, complete);
+        onUpdate(QuestionKit.currentAnswers, complete, missing);
     }
 
     QuestionKit.addValue = function(key, value) {
@@ -794,4 +1155,6 @@ requirejs(dependencies, function(mdc) {
     };
 
     window.QuestionKit = QuestionKit;
+    
+    return QuestionKit;
 });
