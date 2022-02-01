@@ -1,20 +1,20 @@
 if (requirejs.s.contexts._.config.paths['material'] == undefined || requirejs.s.contexts._.config.paths['jquery'] == undefined) {
-	requirejs.config({
-		shim: {
-			jquery: {
-				exports: "$"
-			},
-			recaptcha: {
-				exports: "grecaptcha"
-			}
-		},
-		paths: {
-			material: "./vendor/mdc-web/material-components-web.min",
-			libphonenumber: "./vendor/libphonenumber-max",
-			jquery: "./vendor/jquery-reuse",
-			recaptcha: "//www.google.com/recaptcha/api",
-		}
-	});
+    requirejs.config({
+        shim: {
+            jquery: {
+                exports: "$"
+            },
+            recaptcha: {
+                exports: "grecaptcha"
+            }
+        },
+        paths: {
+            material: "./vendor/mdc-web/material-components-web.min",
+            libphonenumber: "./vendor/libphonenumber-max",
+            jquery: "./vendor/jquery-reuse",
+            recaptcha: "//www.google.com/recaptcha/api",
+        }
+    });
 }
 
 var dependencies = ["material", "libphonenumber", "recaptcha", "jquery"];
@@ -25,98 +25,88 @@ var translations = {
         "es": "Necesario",
     },
     "label_month": {
-    	"en": "Month",
-    	"es": "Mes"
+        "en": "Month",
+        "es": "Mes"
     },
     "label_day": {
-    	"en": "Day",
-    	"es": "Dia"
+        "en": "Day",
+        "es": "Dia"
     },
     "label_year": {
-    	"en": "Year",
-    	"es": "Año"
+        "en": "Year",
+        "es": "Año"
     },
     "month_jan": {
-    	"en": "January",
-    	"es": "Enero"
+        "en": "January",
+        "es": "Enero"
     },
     "month_feb": {
-    	"en": "February",
-    	"es": "Febrero"
+        "en": "February",
+        "es": "Febrero"
     },
     "month_mar": {
-    	"en": "March",
-    	"es": "Marzo"
+        "en": "March",
+        "es": "Marzo"
     },
     "month_apr": {
-    	"en": "April",
-    	"es": "Abril"
+        "en": "April",
+        "es": "Abril"
     },
     "month_may": {
-    	"en": "May",
-    	"es": "Mayo"
+        "en": "May",
+        "es": "Mayo"
     },
     "month_jun": {
-    	"en": "June",
-    	"es": "Junio"
+        "en": "June",
+        "es": "Junio"
     },
     "month_jul": {
-    	"en": "July",
-    	"es": "Julio"
+        "en": "July",
+        "es": "Julio"
     },
     "month_aug": {
-    	"en": "August",
-    	"es": "Agosto"
+        "en": "August",
+        "es": "Agosto"
     },
     "month_sep": {
-    	"en": "September",
-    	"es": "Septiembre"
+        "en": "September",
+        "es": "Septiembre"
     },
     "month_oct": {
-    	"en": "October",
-    	"es": "Octubre"
+        "en": "October",
+        "es": "Octubre"
     },
     "month_nov": {
-    	"en": "November",
-    	"es": "Noviembre"
+        "en": "November",
+        "es": "Noviembre"
     },
     "month_dec": {
-    	"en": "December",
-    	"es": "Diciembre"
+        "en": "December",
+        "es": "Diciembre"
     },
     "label_hour": {
-    	"en": "Hour",
-    	"es": "Hora"
+        "en": "Hour",
+        "es": "Hora"
     },
     "label_minute": {
-    	"en": "Minute",
-    	"es": "Minuto"
+        "en": "Minute",
+        "es": "Minuto"
     },
     "label_am_pm": {
-    	"en": "AM / PM",
-    	"es": "a.m. / p.m."
+        "en": "AM / PM",
+        "es": "a.m. / p.m."
     },
     "label_am": {
-    	"en": "AM",
-    	"es": "a.m."
+        "en": "AM",
+        "es": "a.m."
     },
     "label_pm": {
-    	"en": "PM",
-    	"es": "p.m."
+        "en": "PM",
+        "es": "p.m."
     }
 };
 
 requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
-	console.log('MDC QK');
-	console.log(mdc);
-
-	console.log('PHONE QK');
-	console.log(phonenumber);
-
-	console.log('RECAPTCHA QK');
-	console.log(recaptcha);
-	console.log(grecaptcha);
-	
     var QuestionKit = {};
 
     QuestionKit.valueForLabel = function(labelDefinition) {
@@ -137,22 +127,22 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
 
     QuestionKit.valueForTerm = function(term) {
         var language = (window.questionKitLanguage || navigator.language || navigator.systemLanguage || navigator.userLanguage || 'en').substr(0, 2).toLowerCase();
-        
+
         if (translations[term] != undefined) {
-			var value = translations[term][language];
+            var value = translations[term][language];
 
-			if (value == undefined) {
-				value = translations[term]['en'];
-			}
+            if (value == undefined) {
+                value = translations[term]['en'];
+            }
 
-			if (value == undefined) {
-				value = JSON.stringify(term);
-			}
+            if (value == undefined) {
+                value = JSON.stringify(term);
+            }
 
-	        return value;
-	    }
-	    
-	    return term;
+            return value;
+        }
+
+        return term;
     }
 
     QuestionKit.cardRenderers = {};
@@ -193,38 +183,38 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
 
     QuestionKit.cardRenderers['phone-number'] = function(definition) {
         var output = '';
-        
+
         let region = definition.region
-        
+
         if (region === undefined) {
-        	region = 'US'
+            region = 'US'
         }
 
         output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['prompt']) + '</h6>';
-        
+
         if (definition.lock_minute !== undefined) {
-			output += '<div>';
-			output += '  <div class="qk-phone-number mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--with-trailing-icon mdc-text-field--disabled" style="width: 100%;" data-region="' + region + '">';
-			output += '    <input type="text" id="' + definition['key'] + '" class="mdc-text-field__input" value="' + definition.lock_minute + '" disabled/>';
-			output += '    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" role="button">phone_disabled</i>';
-			output += '    <div class="mdc-notched-outline">';
-			output += '      <div class="mdc-notched-outline__leading"></div>';
-			output += '      <div class="mdc-notched-outline__trailing"></div>';
-			output += '    </div>';
-			output += '  </div>';
-			output += '</div>';
+            output += '<div>';
+            output += '  <div class="qk-phone-number mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--with-trailing-icon mdc-text-field--disabled" style="width: 100%;" data-region="' + region + '">';
+            output += '    <input type="text" id="' + definition['key'] + '" class="mdc-text-field__input" value="' + definition.lock_minute + '" disabled/>';
+            output += '    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" role="button">phone_disabled</i>';
+            output += '    <div class="mdc-notched-outline">';
+            output += '      <div class="mdc-notched-outline__leading"></div>';
+            output += '      <div class="mdc-notched-outline__trailing"></div>';
+            output += '    </div>';
+            output += '  </div>';
+            output += '</div>';
         } else {
-			output += '<div>';
-			output += '  <div class="qk-phone-number mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--with-trailing-icon" style="width: 100%;" data-region="' + region + '">';
-			output += '    <input type="text" id="' + definition['key'] + '" class="mdc-text-field__input" />';
-			output += '    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" role="button">phone_disabled</i>';
-			output += '    <div class="mdc-notched-outline">';
-			output += '      <div class="mdc-notched-outline__leading"></div>';
-			output += '      <div class="mdc-notched-outline__trailing"></div>';
-			output += '    </div>';
-			output += '  </div>';
-			output += '</div>';
-		}
+            output += '<div>';
+            output += '  <div class="qk-phone-number mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--with-trailing-icon" style="width: 100%;" data-region="' + region + '">';
+            output += '    <input type="text" id="' + definition['key'] + '" class="mdc-text-field__input" />';
+            output += '    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" role="button">phone_disabled</i>';
+            output += '    <div class="mdc-notched-outline">';
+            output += '      <div class="mdc-notched-outline__leading"></div>';
+            output += '      <div class="mdc-notched-outline__trailing"></div>';
+            output += '    </div>';
+            output += '  </div>';
+            output += '</div>';
+        }
 
         return output;
     }
@@ -258,7 +248,7 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
             var optionKey = definition['key'] + '_' + option['value'] + '_mdc_checkbox';
 
             output += '<div>';
-            output += '  <div class="mdc-form-field">';
+            output += '  <div class="mdc-form-field" style="margin-bottom: 8px;">';
             output += '    <div class="mdc-checkbox">';
             output += '      <input type="checkbox" class="mdc-checkbox__native-control" id="' + optionKey + '" value="' + option['value'] + '" data-question-key="' + definition['key'] + '"/>';
             output += '      <div class="mdc-checkbox__background">';
@@ -268,7 +258,7 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
             output += '        <div class="mdc-checkbox__mixedmark"></div>';
             output += '      </div>';
             output += '    </div>';
-            output += '    <label for="' + optionKey + '" class="mdc-typography--body1" style="padding-top: 8px;">' + QuestionKit.valueForLabel(option['label']) + '</label>';
+            output += '    <label for="' + optionKey + '" class="mdc-typography--body1">' + QuestionKit.valueForLabel(option['label']) + '</label>';
             output += '  </div>';
             output += '</div>';
         }
@@ -287,8 +277,7 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
             var optionKey = definition['key'] + '_' + option['value'];
 
             output += '<div>';
-
-            output += '  <div class="mdc-form-field">';
+            output += '  <div class="mdc-form-field" style="margin-bottom: 8px;">';
             output += '    <div class="mdc-radio">';
             output += '      <input type="radio" class="mdc-radio__native-control" id="' + optionKey + '" name="' + definition['key'] + '" value="' + option['value'] + '">';
             output += '      <div class="mdc-radio__background">';
@@ -296,7 +285,7 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
             output += '        <div class="mdc-radio__inner-circle"></div>';
             output += '      </div>';
             output += '    </div>';
-            output += '    <label for="' + optionKey + '" class="mdc-typography--body1" style="padding-top: 8px;">' + QuestionKit.valueForLabel(option['label']) + '</label>';
+            output += '    <label for="' + optionKey + '" class="mdc-typography--body1">' + QuestionKit.valueForLabel(option['label']) + '</label>';
             output += '  </div>';
             output += '</div>';
         }
@@ -425,19 +414,19 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
         let defaultHour = '';
         let defaultMinute = '';
         let defaultAmPm = '';
-        
+
         if (definition.defaults !== undefined) {
-        	if (definition.defaults.hour !== undefined) {
-        		defaultHour = definition.defaults.hour;
-        	}
+            if (definition.defaults.hour !== undefined) {
+                defaultHour = definition.defaults.hour;
+            }
 
-        	if (definition.defaults.minute !== undefined) {
-        		defaultMinute = definition.defaults.minute;
-        	}
+            if (definition.defaults.minute !== undefined) {
+                defaultMinute = definition.defaults.minute;
+            }
 
-        	if (definition.defaults.am_pm !== undefined) {
-        		defaultAmPm = definition.defaults.am_pm;
-        	}
+            if (definition.defaults.am_pm !== undefined) {
+                defaultAmPm = definition.defaults.am_pm;
+            }
         }
 
         output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition['prompt']) + '</h6>';
@@ -457,34 +446,34 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
         output += '        </div>';
         output += '       </div>';
         output += '    </div>';
-        
+
         if (definition.lock_minute !== undefined) {
-			output += '    <div class="mdc-layout-grid__cell">';
-			output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--minute mdc-text-field--disabled" style="width: 100%;">';
-			output += '        <input type="number" id="' + definition['key'] + '_minute" class="mdc-text-field__input" min="0" max="59"  value="' + definition.lock_minute + '" disabled />';
-			output += '        <div class="mdc-notched-outline">';
-			output += '          <div class="mdc-notched-outline__leading"></div>';
-			output += '           <span class="mdc-notched-outline__notch">';
-			output += '             <span class="mdc-floating-label" id="my-label-id">' + QuestionKit.valueForTerm('label_minute') + '</span>';
-			output += '           </span>';
-			output += '          <div class="mdc-notched-outline__trailing"></div>';
-			output += '        </div>';
-			output += '       </div>';
-			output += '    </div>';
-		} else {
-			output += '    <div class="mdc-layout-grid__cell">';
-			output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--minute" style="width: 100%;">';
-			output += '        <input type="number" id="' + definition['key'] + '_minute" class="mdc-text-field__input" min="0" max="59"  value="' + defaultMinute + '" />';
-			output += '        <div class="mdc-notched-outline">';
-			output += '          <div class="mdc-notched-outline__leading"></div>';
-			output += '           <span class="mdc-notched-outline__notch">';
-			output += '             <span class="mdc-floating-label" id="my-label-id">' + QuestionKit.valueForTerm('label_minute') + '</span>';
-			output += '           </span>';
-			output += '          <div class="mdc-notched-outline__trailing"></div>';
-			output += '        </div>';
-			output += '       </div>';
-			output += '    </div>';
-		}		
+            output += '    <div class="mdc-layout-grid__cell">';
+            output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--minute mdc-text-field--disabled" style="width: 100%;">';
+            output += '        <input type="number" id="' + definition['key'] + '_minute" class="mdc-text-field__input" min="0" max="59"  value="' + definition.lock_minute + '" disabled />';
+            output += '        <div class="mdc-notched-outline">';
+            output += '          <div class="mdc-notched-outline__leading"></div>';
+            output += '           <span class="mdc-notched-outline__notch">';
+            output += '             <span class="mdc-floating-label" id="my-label-id">' + QuestionKit.valueForTerm('label_minute') + '</span>';
+            output += '           </span>';
+            output += '          <div class="mdc-notched-outline__trailing"></div>';
+            output += '        </div>';
+            output += '       </div>';
+            output += '    </div>';
+        } else {
+            output += '    <div class="mdc-layout-grid__cell">';
+            output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--minute" style="width: 100%;">';
+            output += '        <input type="number" id="' + definition['key'] + '_minute" class="mdc-text-field__input" min="0" max="59"  value="' + defaultMinute + '" />';
+            output += '        <div class="mdc-notched-outline">';
+            output += '          <div class="mdc-notched-outline__leading"></div>';
+            output += '           <span class="mdc-notched-outline__notch">';
+            output += '             <span class="mdc-floating-label" id="my-label-id">' + QuestionKit.valueForTerm('label_minute') + '</span>';
+            output += '           </span>';
+            output += '          <div class="mdc-notched-outline__trailing"></div>';
+            output += '        </div>';
+            output += '       </div>';
+            output += '    </div>';
+        }
 
         output += '    <div class="mdc-layout-grid__cell mdc-select mdc-select--outlined mdc-select--am-pm">';
         output += '      <div class="mdc-select__anchor" aria-labelledby="outlined-select-label">';
@@ -498,13 +487,13 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
         output += '        <span class="mdc-select__selected-text-container">';
 
         if (defaultAmPm == "am") {
-	        output += '          <span class="mdc-select__selected-text">' + QuestionKit.valueForTerm('label_am') + '</span>';
-	    } else if (defaultAmPm == "pm") {
-	        output += '          <span class="mdc-select__selected-text">' + QuestionKit.valueForTerm('label_pm') + '</span>';
-	    } else {
-	        output += '          <span class="mdc-select__selected-text"></span>';
-	    }
-	    
+            output += '          <span class="mdc-select__selected-text">' + QuestionKit.valueForTerm('label_am') + '</span>';
+        } else if (defaultAmPm == "pm") {
+            output += '          <span class="mdc-select__selected-text">' + QuestionKit.valueForTerm('label_pm') + '</span>';
+        } else {
+            output += '          <span class="mdc-select__selected-text"></span>';
+        }
+
         output += '        </span>';
         output += '        <span class="mdc-select__dropdown-icon">';
         output += '          <svg class="mdc-select__dropdown-icon-graphic" viewBox="7 10 10 5" focusable="false">';
@@ -517,22 +506,22 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
         output += '      </div>';
         output += '      <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">';
         output += '        <ul class="mdc-deprecated-list" role="listbox" aria-label="Month Listbox">';
-        
+
         if (defaultAmPm == "am") {
-	        output += '          <li class="mdc-deprecated-list-item mdc-list-item--selected" data-value="am" aria-selected="true">';
-	    } else { 
-	        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="am">';
-	    }
-	    
+            output += '          <li class="mdc-deprecated-list-item mdc-list-item--selected" data-value="am" aria-selected="true">';
+        } else {
+            output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="am">';
+        }
+
         output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
         output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('label_am') + '</span>';
         output += '          </li>';
 
         if (defaultAmPm == "pm") {
-	        output += '          <li class="mdc-deprecated-list-item mdc-list-item--selected" data-value="pm" aria-selected="true">';
-	    } else { 
-	        output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="pm">';
-	    }
+            output += '          <li class="mdc-deprecated-list-item mdc-list-item--selected" data-value="pm" aria-selected="true">';
+        } else {
+            output += '          <li class="mdc-deprecated-list-item" aria-selected="false" data-value="pm">';
+        }
 
         output += '            <span class="mdc-deprecated-list-item__ripple"></span>';
         output += '            <span class="mdc-deprecated-list-item__text">' + QuestionKit.valueForTerm('label_pm') + '</span>';
@@ -557,7 +546,7 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
 
     QuestionKit.renderQuestion = function(definition, index) {
         var output = '';
-        
+
         output += '<div class="mdc-card mdc-layout-grid__cell--span-12" style="margin-bottom: 1.25rem; padding: 1.25rem;" id="question_kit_container_' + definition['key'] + '">';
 
         var type = definition['prompt-type'];
@@ -586,10 +575,10 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
     QuestionKit.currentDefinition = [];
 
     QuestionKit.loadQuestionsFromData = function(options, data, onLoaded) {
-    	if (Array.isArray(data) === false) {
-    		data = [data]
-    	}
-    	
+        if (Array.isArray(data) === false) {
+            data = [data]
+        }
+
         var disabled = options["editable"] === false;
 
         var container = $(options["element"]);
@@ -597,7 +586,7 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
         container.empty();
 
         var itemsHtml = '<div class="mdc-layout-grid" style="padding: 0px;">';
-        
+
         var itemIndex = 0;
 
         for (var i = 0; i < data.length; i++) {
@@ -625,7 +614,7 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
                 if (constraints != undefined && constraints.length > 0) {
                     QuestionKit.registerConstraint(item["key"], constraints, item['constraint-matches']);
                 }
-                
+
                 itemIndex += 1;
             }
         }
@@ -704,17 +693,17 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
 
                 select.disabled = disabled;
 
-				select.listen('MDCSelect:change', () => {
+                select.listen('MDCSelect:change', () => {
                     var name = $(this).attr('id')
                     var value = select.value
 
                     QuestionKit.updateValue(name, value);
-				});
+                });
             });
 
             $('.qk-select-date').each(function(index) {
-            	let key = $(this).attr('id');
-            	
+                let key = $(this).attr('id');
+
                 const monthSelect = mdc.select.MDCSelect.attachTo($(this).find('.mdc-select--month').get(0));
                 monthSelect.disabled = disabled;
 
@@ -723,121 +712,121 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
 
                 let yearField = mdc.textField.MDCTextField.attachTo($(this).find('.mdc-text-field--year').get(0));
                 yearField.disabled = disabled;
-            	
-            	let updateDate = function() {
+
+                let updateDate = function() {
                     var month = monthSelect.value;
                     var day = dayField.value;
                     var year = yearField.value;
-                    
+
                     if (month.length > 0 && day.length > 0 && year.length > 0) {
-						while (month.length < 2) {
-							month = '0' + month;
-						}
+                        while (month.length < 2) {
+                            month = '0' + month;
+                        }
 
-						while (day.length < 2) {
-							day = '0' + day;
-						}
+                        while (day.length < 2) {
+                            day = '0' + day;
+                        }
 
-						while (year.length < 4) {
-							year = '0' + year;
-						}
-                    
-    	                QuestionKit.updateValue(key, year + '-' + month + '-' + day);
-    	            } else {
-    	            	console.log("Incomplete Selection");
-    	            }
-            	};
+                        while (year.length < 4) {
+                            year = '0' + year;
+                        }
 
-				monthSelect.listen('MDCSelect:change', () => {
-					updateDate();
-				});
+                        QuestionKit.updateValue(key, year + '-' + month + '-' + day);
+                    } else {
+                        console.log("Incomplete Selection");
+                    }
+                };
+
+                monthSelect.listen('MDCSelect:change', () => {
+                    updateDate();
+                });
 
                 $(this).find('input[type="number"]').change(function(eventObj) {
-					updateDate();
+                    updateDate();
                 });
             });
 
             $('.qk-select-time-12-hour').each(function(index) {
-            	let key = $(this).attr('id');
-            	
-            	const defaultAmPm = $(this).attr('data-default-ampm');
-            	
+                let key = $(this).attr('id');
+
+                const defaultAmPm = $(this).attr('data-default-ampm');
+
                 const amPmSelect = mdc.select.MDCSelect.attachTo($(this).find('.mdc-select--am-pm').get(0));
                 amPmSelect.disabled = disabled;
                 amPmSelect.value = defaultAmPm
-                
+
                 let hourField = mdc.textField.MDCTextField.attachTo($(this).find('.mdc-text-field--hour').get(0));
                 hourField.disabled = disabled;
 
                 let minuteField = mdc.textField.MDCTextField.attachTo($(this).find('.mdc-text-field--minute').get(0));
                 minuteField.disabled = (minuteField.disabled || disabled);
-                
-            	let updateTime = function() {
+
+                let updateTime = function() {
                     var amPm = amPmSelect.value;
                     var hour = parseInt(hourField.value);
                     var minute = parseInt(minuteField.value);
 
                     if (amPm.length > 0 && isNaN(hour) == false && isNaN(minute) == false) {
-                    	if (amPm == 'pm' && hour !== 12) {
-                    		hour += 12
-                    	} else if (hour === 12 && amPm == 'am') {
-                    		hour = 0
-                    	}
-                    	
-                    	hour = "" + hour
-                    	minute = "" + minute
-                    	
-						while (hour.length < 2) {
-							hour = '0' + hour;
-						}
+                        if (amPm == 'pm' && hour !== 12) {
+                            hour += 12
+                        } else if (hour === 12 && amPm == 'am') {
+                            hour = 0
+                        }
 
-						while (minute.length < 2) {
-							minute = '0' + minute;
-						}
-                    	
-    	                QuestionKit.updateValue(key, hour + ':' + minute);
-    	            } else {
-    	            	console.log("Incomplete Selection");
-    	            }
-            	};
+                        hour = "" + hour
+                        minute = "" + minute
 
-				amPmSelect.listen('MDCSelect:change', () => {
-					updateTime();
-				});
+                        while (hour.length < 2) {
+                            hour = '0' + hour;
+                        }
 
-                $(this).find('input[type="number"]').change(function(eventObj) {
-					updateTime();
+                        while (minute.length < 2) {
+                            minute = '0' + minute;
+                        }
+
+                        QuestionKit.updateValue(key, hour + ':' + minute);
+                    } else {
+                        console.log("Incomplete Selection");
+                    }
+                };
+
+                amPmSelect.listen('MDCSelect:change', () => {
+                    updateTime();
                 });
 
-				updateTime();
+                $(this).find('input[type="number"]').change(function(eventObj) {
+                    updateTime();
+                });
+
+                updateTime();
             });
-            
+
             $('.qk-phone-number').each(function(index) {
                 var field = mdc.textField.MDCTextFieldIcon.attachTo($(this).get(0));
 
                 field.disabled = disabled;
-                
+
                 const region = $(this).attr('data-region')
-                
+
                 const icon = $(this).find('i.material-icons')
 
                 $(this).find('input[type="text"]').on("keyup change paste", function(eventObj) {
                     var name = $(this).attr('id');
                     var value = $(this).val();
-                    
-                    try {
-						const parsed = phonenumber.parsePhoneNumber(value, region)
-					
-						if (parsed.isValid()) {
-							icon.text('phone_enabled')
 
-							QuestionKit.updateValue(name, parsed.number);
-						} else {
-							icon.text('phone_disabled')
-						}
-					} catch(err) {
-						icon.text('phone_disabled')
-					}
+                    try {
+                        const parsed = phonenumber.parsePhoneNumber(value, region)
+
+                        if (parsed.isValid()) {
+                            icon.text('phone_enabled')
+
+                            QuestionKit.updateValue(name, parsed.number);
+                        } else {
+                            icon.text('phone_disabled')
+                        }
+                    } catch(err) {
+                        icon.text('phone_disabled')
+                    }
                 });
             });
 
@@ -860,15 +849,15 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
             }
 
             $('.g-recaptcha').each(function(index) {
-				const name = $(this).attr('id');
+                const name = $(this).attr('id');
 
-				recaptcha.render($(this).get(0), {
-					"sitekey": $(this).attr("data-sitekey"),
-					"callback": function(response) {
-						QuestionKit.updateValue(name, response);
-					}
-				});
-			});
+                recaptcha.render($(this).get(0), {
+                    "sitekey": $(this).attr("data-sitekey"),
+                    "callback": function(response) {
+                        QuestionKit.updateValue(name, response);
+                    }
+                });
+            });
 
             if (options['editable'] == false) {
                 $(updateButton).hide();
@@ -896,61 +885,61 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
 
     QuestionKit.loadValues = function(values, onLoaded) {
         var loaded = function(data) {
-			QuestionKit.currentAnswers = {};
+            QuestionKit.currentAnswers = {};
 
-			for (var item of QuestionKit.currentDefinition) {
-				var key = item['key'];
-				var value = data[key];
+            for (var item of QuestionKit.currentDefinition) {
+                var key = item['key'];
+                var value = data[key];
 
-				if (value != undefined && value != '') {
-					QuestionKit.currentAnswers[key] = value;
+                if (value != undefined && value != '') {
+                    QuestionKit.currentAnswers[key] = value;
 
-					if (item['prompt-type'] == 'select-multiple') {
-						for (var selected of value) {
-							$('input[data-question-key="' + key + '"][value="' + selected + '"]').prop("checked", true);
-						}
-					} else if (item['prompt-type'] == 'select-one') {
-						$('input[name="' + key + '"][value="' + value + '"]').prop("checked", true);
-					} else if (item['prompt-type'] == 'single-line') {
-						$('input#' + key).val(value);
-					} else if (item['prompt-type'] == 'multi-line') {
-						$('textarea#' + key).val(value);
-					} else if (item['prompt-type'] == 'multi-line') {
-						$('textarea#' + key).val(value);
-					} else if (item['prompt-type'] == 'date-select') {
-						var tokens = value.split('-');
-					
-						var year = parseInt(tokens[0]);
-						var month = parseInt(tokens[1]);
-						var day = parseInt(tokens[2]);
-				
-						$('#' + key + ' select').val(''+ month);
-						$('#' + key + '_day').val(''+ day);
-						$('#' + key + '_year').val(''+ year);
-					} else if (item['prompt-type'] == 'time-select-12-hour') {
-						var tokens = value.split(':');
-						
-						var hour = parseInt(tokens[0]);
-						
-						if (hour > '12') {
-							$('#' + key + ' select').val('pm');
-							hour -= 12;
-						} else {
-							$('#' + key + ' select').val('am');
-						}
+                    if (item['prompt-type'] == 'select-multiple') {
+                        for (var selected of value) {
+                            $('input[data-question-key="' + key + '"][value="' + selected + '"]').prop("checked", true);
+                        }
+                    } else if (item['prompt-type'] == 'select-one') {
+                        $('input[name="' + key + '"][value="' + value + '"]').prop("checked", true);
+                    } else if (item['prompt-type'] == 'single-line') {
+                        $('input#' + key).val(value);
+                    } else if (item['prompt-type'] == 'multi-line') {
+                        $('textarea#' + key).val(value);
+                    } else if (item['prompt-type'] == 'multi-line') {
+                        $('textarea#' + key).val(value);
+                    } else if (item['prompt-type'] == 'date-select') {
+                        var tokens = value.split('-');
 
-						var minute = parseInt(tokens[1]);
-				
-						$('#' + key + ' select').val(''+ month);
-						$('#' + key + '_minute').val(minute);
-						$('#' + key + '_hour').val(hour);
-					}
-				}
-			}
+                        var year = parseInt(tokens[0]);
+                        var month = parseInt(tokens[1]);
+                        var day = parseInt(tokens[2]);
+
+                        $('#' + key + ' select').val(''+ month);
+                        $('#' + key + '_day').val(''+ day);
+                        $('#' + key + '_year').val(''+ year);
+                    } else if (item['prompt-type'] == 'time-select-12-hour') {
+                        var tokens = value.split(':');
+
+                        var hour = parseInt(tokens[0]);
+
+                        if (hour > '12') {
+                            $('#' + key + ' select').val('pm');
+                            hour -= 12;
+                        } else {
+                            $('#' + key + ' select').val('am');
+                        }
+
+                        var minute = parseInt(tokens[1]);
+
+                        $('#' + key + ' select').val(''+ month);
+                        $('#' + key + '_minute').val(minute);
+                        $('#' + key + '_hour').val(hour);
+                    }
+                }
+            }
 
             onLoaded();
         }
-        
+
         if (values === undefined || values === "") {
             loaded({});
         } else if ((typeof values) == "string") {
@@ -1120,6 +1109,59 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
                 $("#question_kit_container_" + key).hide();
             }
         }
+
+        for (var item of QuestionKit.currentDefinition) {
+            if (item.options !== undefined) {
+                for (var option of item.options) {
+                    if (option['disabled-constraints-any'] !== undefined) {
+                        let disabled = null;
+
+                        for (var constraint of option['disabled-constraints-any']) {
+                            if (disabled === null) {
+                                disabled = false;
+                            }
+
+                            var value = QuestionKit.currentAnswers[constraint['key']];
+
+                            if (value === undefined) {
+
+                            } else if (constraint['operator'] == 'in') {
+                                if (value.indexOf(constraint['value']) != -1) {
+                                    disabled = true;
+                                }
+                            } else if (constraint['operator'] == '=') {
+                                if (value === constraint['value']) {
+                                    disabled = true;
+                                }
+                            } else if (constraint['operator'] == '!=') {
+                                if (value != constraint['value']) {
+                                    disabled = true;
+                                }
+                            } else if (constraint['operator'] == 'more-than') {
+                                if (value.length >= constraint['value']) {
+                                    disabled = true;
+                                }
+                            } else {
+                                console.log('TODO');
+                                console.log(constraint);
+                            }
+                        }
+
+                        let element = $('[value="' + option.value + '"][data-question-key="' + item.key + '"]')
+
+                        if (disabled) {
+                            if (element.is(':checked') === false) {
+                                element.prop('disabled', true);
+                                element.parent().parent().css('text-decoration', 'line-through')
+                            }
+                        } else {
+                            element.prop('disabled', false);
+                            element.parent().parent().css('text-decoration', '')
+                        }
+                    }
+                }
+            }
+        }
     };
 
     QuestionKit.initialize = function(options) {
@@ -1155,6 +1197,6 @@ requirejs(dependencies, function(mdc, phonenumber, recaptcha) {
     };
 
     window.QuestionKit = QuestionKit;
-    
+
     return QuestionKit;
 });
