@@ -1,0 +1,22 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.7.0
+
+workflows:
+  build:
+    jobs:
+      - build
+
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - node/install
+      - checkout
+      - run:
+          name: Validate Javascript code
+          command: |
+            npm install
+            npx eslint question-kit.js
