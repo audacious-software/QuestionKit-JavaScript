@@ -105,6 +105,7 @@ const translations = {
   label_pm: {
     en: 'PM',
     es: 'p.m.'
+<<<<<<< HEAD
   },
   label_time_unit: {
     en: 'Time Unit',
@@ -141,9 +142,6 @@ const translations = {
 }
 
 requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
-  console.log('MDC QK')
-  console.log(mdc)
-
   const QuestionKit = {}
 
   QuestionKit.valueForLabel = function (labelDefinition) {
@@ -305,7 +303,6 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
 
   QuestionKit.cardRenderers['select-one'] = function (definition) {
     let output = ''
-
     output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.prompt) + '</h6>'
 
     for (let i = 0; i < definition.options.length; i++) {
@@ -314,7 +311,6 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
       const optionKey = definition.key + '_' + option.value
 
       output += '<div>'
-
       output += '  <div class="mdc-form-field">'
       output += '    <div class="mdc-radio">'
       output += '      <input type="radio" class="mdc-radio__native-control" id="' + optionKey + '" name="' + definition.key + '" value="' + option.value + '">'
@@ -731,8 +727,8 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
     }
 
     if (addButton) {
-      itemsHtml += '<button class="mdc-button mdc-button--raised mt-3 mdc-typography p-5  mdc-typography" id="question_kit_update_form" style="width: 100%;">'
-      itemsHtml += '  <span class="mdc-button__label mdc-typography--headline1">Update</span>'
+      itemsHtml += '<button class="mdc-button mdc-button--raised mt-3" id="question_kit_update_form">'
+      itemsHtml += '  <span class="mdc-button__label">Update</span>'
       itemsHtml += '</button>'
     }
 

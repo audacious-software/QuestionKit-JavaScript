@@ -28,4 +28,3 @@ jobs:
             - "/home/circleci/project/node_modules"
       - store_test_results:
           path: test-results/
-
