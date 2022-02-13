@@ -1,0 +1,31 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.7.0
+
+workflows:
+  build:
+    jobs:
+      - validate
+
+jobs:
+  validate:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - node/install
+      - checkout
+      - restore_cache:
+          key: node-modules-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: Validate Javascript code
+          command: |
+            npm install
+            npx eslint question-kit.js
+      - save_cache:
+          key: node-modules-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - "/home/circleci/project/node_modules"
+      - store_test_results:
+          path: test-results/
+
