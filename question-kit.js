@@ -105,7 +105,6 @@ const translations = {
   label_pm: {
     en: 'PM',
     es: 'p.m.'
-<<<<<<< HEAD
   },
   label_time_unit: {
     en: 'Time Unit',
