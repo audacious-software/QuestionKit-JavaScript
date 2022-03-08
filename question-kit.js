@@ -1010,7 +1010,11 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
 
   QuestionKit.loadValues = function (values, onLoaded) {
     const loaded = function (data) {
-      QuestionKit.currentAnswers = {}
+      QuestionKit.currentAnswers = values
+
+      if (QuestionKit.currentAnswers === undefined) {
+        QuestionKit.currentAnswers = {}
+      }
 
       for (const item of QuestionKit.currentDefinition) {
         const key = item.key
@@ -1208,6 +1212,10 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
         for (const constraint of constraints) {
           const value = QuestionKit.currentAnswers[constraint.key]
 
+          console.log('C[' + constraint.key + ']: ' + value)
+          console.log(constraint)
+          console.log(QuestionKit.currentAnswers)
+
           if (constraint.operator === 'in') {
             if (value === undefined) {
               failed.push(key)
@@ -1229,6 +1237,9 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
         }
       }
     }
+
+    console.log('FAILED')
+    console.log(failed)
 
     for (const item of QuestionKit.currentDefinition) {
       const key = item.key
