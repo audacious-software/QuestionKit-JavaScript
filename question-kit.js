@@ -1016,7 +1016,11 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
 
   QuestionKit.loadValues = function (values, onLoaded) {
     const loaded = function (data) {
-      QuestionKit.currentAnswers = {}
+      QuestionKit.currentAnswers = values
+
+      if (QuestionKit.currentAnswers === undefined) {
+        QuestionKit.currentAnswers = {}
+      }
 
       for (const item of QuestionKit.currentDefinition) {
         const key = item.key
@@ -1286,12 +1290,6 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
         })
       }
     }
-
-    console.log('DISABLE:')
-    console.log(toDisable)
-
-    console.log('ENABLE:')
-    console.log(toEnable)
 
     $.each(toEnable, function (index, element) {
       $(element).parent().parent().css('text-decoration', '')
