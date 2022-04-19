@@ -14,12 +14,13 @@ if (requirejs.s.contexts._.config.paths.material === undefined || requirejs.s.co
       material: './vendor/mdc-web/material-components-web-11.0.0',
       libphonenumber: './vendor/libphonenumber-max',
       jquery: './vendor/jquery-reuse',
+      marked: './vendor/marked.min',
       recaptcha: '//www.google.com/recaptcha/api'
     }
   })
 }
 
-const dependencies = ['material', 'libphonenumber', 'recaptcha', 'jquery']
+const dependencies = ['material', 'libphonenumber', 'recaptcha', 'marked', 'jquery']
 
 const translations = {
   label_required: {
@@ -140,8 +141,16 @@ const translations = {
   }
 }
 
-requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
+requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
   const QuestionKit = {}
+
+  marked.setOptions({
+    breaks: true
+  })
+
+  QuestionKit.markupValue = function (value) {
+    return marked.parse(value)
+  }
 
   QuestionKit.valueForLabel = function (labelDefinition) {
     const language = (window.questionKitLanguage || navigator.language || navigator.systemLanguage || navigator.userLanguage || 'en').substr(0, 2).toLowerCase()
@@ -184,7 +193,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
   QuestionKit.cardRenderers['read-only-text'] = function (definition) {
     let output = ''
 
-    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.text) + '</h6>'
+    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.text)) + '</h6>'
 
     return output
   }
@@ -200,7 +209,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
   QuestionKit.cardRenderers['single-line'] = function (definition) {
     let output = ''
 
-    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.prompt) + '</h6>'
+    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.prompt)) + '</h6>'
 
     output += '<div>'
     output += '  <div class="qk-text-field mdc-text-field mdc-text-field--outlined mdc-text-field--no-label" style="width: 100%;">'
@@ -224,31 +233,18 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
       region = 'US'
     }
 
-    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.prompt) + '</h6>'
+    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.prompt)) + '</h6>'
 
-    if (definition.lock_minute !== undefined) {
-      output += '<div>'
-      output += '  <div class="qk-phone-number mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--with-trailing-icon mdc-text-field--disabled" style="width: 100%;" data-region="' + region + '">'
-      output += '    <input type="text" id="' + definition.key + '" class="mdc-text-field__input" value="' + definition.lock_minute + '" disabled/>'
-      output += '    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" role="button">phone_disabled</i>'
-      output += '    <div class="mdc-notched-outline">'
-      output += '      <div class="mdc-notched-outline__leading"></div>'
-      output += '      <div class="mdc-notched-outline__trailing"></div>'
-      output += '    </div>'
-      output += '  </div>'
-      output += '</div>'
-    } else {
-      output += '<div>'
-      output += '  <div class="qk-phone-number mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--with-trailing-icon" style="width: 100%;" data-region="' + region + '">'
-      output += '    <input type="text" id="' + definition.key + '" class="mdc-text-field__input" />'
-      output += '    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" role="button">phone_disabled</i>'
-      output += '    <div class="mdc-notched-outline">'
-      output += '      <div class="mdc-notched-outline__leading"></div>'
-      output += '      <div class="mdc-notched-outline__trailing"></div>'
-      output += '    </div>'
-      output += '  </div>'
-      output += '</div>'
-    }
+    output += '<div>'
+    output += '  <div class="qk-phone-number mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--with-trailing-icon" style="width: 100%;" data-region="' + region + '">'
+    output += '    <input type="text" id="' + definition.key + '" class="mdc-text-field__input" />'
+    output += '    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--trailing" tabindex="0" role="button">phone_disabled</i>'
+    output += '    <div class="mdc-notched-outline">'
+    output += '      <div class="mdc-notched-outline__leading"></div>'
+    output += '      <div class="mdc-notched-outline__trailing"></div>'
+    output += '    </div>'
+    output += '  </div>'
+    output += '</div>'
 
     return output
   }
@@ -256,7 +252,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
   QuestionKit.cardRenderers['multi-line'] = function (definition) {
     let output = ''
 
-    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.prompt) + '</h6>'
+    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.prompt)) + '</h6>'
 
     output += '<div>'
     output += '  <div class="qk-text-field mdc-text-field mdc-text-field--outlined mdc-text-field--textarea mdc-text-field--no-label" style="width: 100%;">'
@@ -274,7 +270,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
   QuestionKit.cardRenderers['select-multiple'] = function (definition) {
     let output = ''
 
-    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.prompt) + '</h6>'
+    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.prompt)) + '</h6>'
 
     for (let i = 0; i < definition.options.length; i++) {
       const option = definition.options[i]
@@ -292,7 +288,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
       output += '        <div class="mdc-checkbox__mixedmark"></div>'
       output += '      </div>'
       output += '    </div>'
-      output += '    <label for="' + optionKey + '" class="mdc-typography--body1">' + QuestionKit.valueForLabel(option.label) + '</label>'
+      output += '    <label for="' + optionKey + '" class="mdc-typography--body1">' + QuestionKit.markupValue(QuestionKit.valueForLabel(option.label)) + '</label>'
       output += '  </div>'
       output += '</div>'
     }
@@ -302,7 +298,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
 
   QuestionKit.cardRenderers['select-one'] = function (definition) {
     let output = ''
-    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.prompt) + '</h6>'
+    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.prompt)) + '</h6>'
 
     for (let i = 0; i < definition.options.length; i++) {
       const option = definition.options[i]
@@ -318,7 +314,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
       output += '        <div class="mdc-radio__inner-circle"></div>'
       output += '      </div>'
       output += '    </div>'
-      output += '    <label for="' + optionKey + '" class="mdc-typography--body1">' + QuestionKit.valueForLabel(option.label) + '</label>'
+      output += '    <label for="' + optionKey + '" class="mdc-typography--body1">' + QuestionKit.markupValue(QuestionKit.valueForLabel(option.label)) + '</label>'
       output += '  </div>'
       output += '</div>'
     }
@@ -329,7 +325,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
   QuestionKit.cardRenderers['date-select'] = function (definition) {
     let output = ''
 
-    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.prompt) + '</h6>'
+    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.prompt)) + '</h6>'
 
     output += '<div class="mdc-layout-grid qk-select-date" id="' + definition.key + '">'
     output += '  <div class="mdc-layout-grid__inner">'
@@ -462,7 +458,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
       }
     }
 
-    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.prompt) + '</h6>'
+    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.prompt)) + '</h6>'
 
     output += '<div class="mdc-layout-grid qk-select-time-12-hour" id="' + definition.key + '" data-default-ampm="' + defaultAmPm + '">'
     output += '  <div class="mdc-layout-grid__inner">'
@@ -481,7 +477,12 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
     output += '    </div>'
 
     if (definition.lock_minute !== undefined) {
-      output += '    <div class="mdc-layout-grid__cell">'
+      if (definition.hide_minute) {
+        output += '    <div style="display: none;">'
+      } else {
+        output += '    <div class="mdc-layout-grid__cell">'
+      }
+
       output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--minute mdc-text-field--disabled" style="width: 100%;">'
       output += '        <input type="number" id="' + definition.key + '_minute" class="mdc-text-field__input" min="0" max="59"  value="' + definition.lock_minute + '" disabled />'
       output += '        <div class="mdc-notched-outline">'
@@ -494,7 +495,12 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
       output += '       </div>'
       output += '    </div>'
     } else {
-      output += '    <div class="mdc-layout-grid__cell">'
+      if (definition.hide_minute) {
+        output += '    <div style="display: none;">'
+      } else {
+        output += '    <div class="mdc-layout-grid__cell">'
+      }
+
       output += '      <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label mdc-text-field--minute" style="width: 100%;">'
       output += '        <input type="number" id="' + definition.key + '_minute" class="mdc-text-field__input" min="0" max="59"  value="' + defaultMinute + '" />'
       output += '        <div class="mdc-notched-outline">'
@@ -572,7 +578,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
   QuestionKit.cardRenderers['time-ago'] = function (definition) {
     let output = ''
 
-    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.valueForLabel(definition.prompt) + '</h6>'
+    output += '<h6 class="mdc-typography--headline6">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.prompt)) + '</h6>'
 
     output += '<div class="mdc-layout-grid qk-select-time-ago" id="' + definition.key + '">'
     output += '  <div class="mdc-layout-grid__inner">'
@@ -658,7 +664,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
     output += renderer(definition)
 
     if (definition.caption) {
-      output += '  <p class="mdc-typography--caption">' + QuestionKit.valueForLabel(definition.caption) + '</p>'
+      output += '  <div class="mdc-typography--caption">' + QuestionKit.markupValue(QuestionKit.valueForLabel(definition.caption)) + '</div>'
     }
 
     if (definition.required) {
@@ -1230,6 +1236,9 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
       }
     }
 
+    const toDisable = []
+    const toEnable = []
+
     for (const item of QuestionKit.currentDefinition) {
       const key = item.key
 
@@ -1238,7 +1247,61 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha) {
       } else {
         $('#question_kit_container_' + key).hide()
       }
+
+      if (item['prompt-type'] === 'select-multiple' || item['prompt-type'] === 'select-one') {
+        $.each(item.options, function (index, option) {
+          const itemKey = 'input[data-question-key="' + key + '"][value="' + option.value + '"]'
+
+          if (option['disabled-constraints-any'] !== undefined) {
+            let disabled = false
+
+            $.each(option['disabled-constraints-any'], function (constraintIndex, constraint) {
+              const answer = QuestionKit.currentAnswers[constraint.key]
+
+              if (answer !== undefined && constraint.value !== undefined) {
+                if (constraint.operator === 'in') {
+                  if (answer.includes(constraint.value)) {
+                    disabled = true
+                  }
+                } else if (constraint.operator === 'more-than') {
+                  if ($(itemKey).prop('checked') === false) {
+                    if (answer.length !== undefined && answer.length >= constraint.value) {
+                      disabled = true
+                    }
+                  }
+                }
+              }
+            })
+
+            if (disabled) {
+              if (toDisable.includes(itemKey) === false) {
+                toDisable.push(itemKey)
+              }
+            } else {
+              if (toEnable.includes(itemKey) === false) {
+                toEnable.push(itemKey)
+              }
+            }
+          }
+        })
+      }
     }
+
+    console.log('DISABLE:')
+    console.log(toDisable)
+
+    console.log('ENABLE:')
+    console.log(toEnable)
+
+    $.each(toEnable, function (index, element) {
+      $(element).parent().parent().css('text-decoration', '')
+      $(element).prop('disabled', false)
+    })
+
+    $.each(toDisable, function (index, element) {
+      $(element).parent().parent().css('text-decoration', 'line-through')
+      $(element).prop('disabled', true)
+    })
   }
 
   QuestionKit.initialize = function (options) {
