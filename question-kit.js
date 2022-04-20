@@ -213,7 +213,27 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
 
     output += '<div>'
     output += '  <div class="qk-text-field mdc-text-field mdc-text-field--outlined mdc-text-field--no-label" style="width: 100%;">'
-    output += '    <input type="text" id="' + definition.key + '" class="mdc-text-field__input" />'
+
+    if (definition.type !== undefined) {
+      if (definition.type === 'integer') {
+        let inputArgs = 'step="1"'
+
+        if (definition.minimum !== undefined) {
+          inputArgs = inputArgs + ' min="' + definition.minimum + '"'
+        }
+
+        if (definition.maximum !== undefined) {
+          inputArgs = inputArgs + ' max="' + definition.maximum + '"'
+        }
+
+        output += '    <input type="number" id="' + definition.key + '" class="mdc-text-field__input" ' + inputArgs + ' />'
+      } else {
+        output += '    <input type="text" id="' + definition.key + '" class="mdc-text-field__input" />'
+      }
+    } else {
+      output += '    <input type="text" id="' + definition.key + '" class="mdc-text-field__input" />'
+    }
+
     output += '    <div class="mdc-notched-outline">'
     output += '      <div class="mdc-notched-outline__leading"></div>'
     output += '      <div class="mdc-notched-outline__trailing"></div>'
@@ -748,6 +768,13 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
         field.disabled = disabled
 
         $(this).find('input[type="text"]').change(function (eventObj) {
+          const name = $(this).attr('id')
+          const value = $(this).val()
+
+          QuestionKit.updateValue(name, value)
+        })
+
+        $(this).find('input[type="number"]').change(function (eventObj) {
           const name = $(this).attr('id')
           const value = $(this).val()
 
