@@ -1132,24 +1132,18 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
         const value = QuestionKit.currentAnswers[question.key]
 
         if (value === undefined) {
-          console.log('COMPLETE CHECK: ' + question.key + ' UNDEFINED')
           missing.push(question.key)
         } else if (value === null) {
-          console.log('COMPLETE CHECK: ' + question.key + ' NULL')
           missing.push(question.key)
         } else if ($.type(value) === 'string' && value.trim().length === 0) {
-          console.log('COMPLETE CHECK: ' + question.key + ' EMPTY STRING')
           missing.push(question.key)
         } else if ($.type(value) === 'array' && value.length === 0) {
-          console.log('COMPLETE CHECK: ' + question.key + ' EMPTY ARRAY')
           missing.push(question.key)
         }
       }
     }
 
     const complete = (missing.length === 0)
-
-    console.log('COMPLETED: ' + complete)
 
     onUpdate(QuestionKit.currentAnswers, complete, missing)
   }
