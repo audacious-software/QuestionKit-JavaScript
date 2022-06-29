@@ -701,7 +701,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
   QuestionKit.loadQuestionsFromData = function (options, data, onLoaded) {
     console.log('QuestionKit.loadQuestionsFromData')
     console.log(data)
-    
+
     if (Array.isArray(data) === false) {
       data = [data]
     }
@@ -1042,9 +1042,6 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
     console.log('QuestionKit.loadQuestions: ' + definitionUrl)
 
     $.get(definitionUrl, function (data) {
-	  console.log('FETCHED')
-	  console.log(data)
-
       QuestionKit.loadQuestionsFromData(options, data, onLoaded)
     })
   }
