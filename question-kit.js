@@ -699,6 +699,9 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
   QuestionKit.currentDefinition = []
 
   QuestionKit.loadQuestionsFromData = function (options, data, onLoaded) {
+    console.log('QuestionKit.loadQuestionsFromData')
+    console.log(data)
+    
     if (Array.isArray(data) === false) {
       data = [data]
     }
@@ -1036,7 +1039,12 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
   }
 
   QuestionKit.loadQuestions = function (options, definitionUrl, onLoaded) {
+    console.log('QuestionKit.loadQuestions: ' + definitionUrl)
+
     $.get(definitionUrl, function (data) {
+	  console.log('FETCHED')
+	  console.log(data)
+
       QuestionKit.loadQuestionsFromData(options, data, onLoaded)
     })
   }
@@ -1324,10 +1332,14 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
   }
 
   QuestionKit.initialize = function (options) {
+    console.log('QuestionKit.initialize')
     if (options.definition !== undefined) {
       QuestionKit.loadQuestions(options, options.definition, function (questions) {
+        console.log('QuestionKit.loadQuestions DONE')
         QuestionKit.renderQuestions(questions, options, function () {
+          console.log('QuestionKit.renderQuestions DONE')
           QuestionKit.loadValues(options.values, function () {
+            console.log('QuestionKit.loadValues DONE')
             QuestionKit.applyConstraints()
 
             if (options.update_button_name !== undefined) {
