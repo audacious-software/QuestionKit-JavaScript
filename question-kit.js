@@ -149,7 +149,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
   })
 
   QuestionKit.markupValue = function (value) {
-    return marked.parse(value)
+    return marked.parseInline(value)
   }
 
   QuestionKit.valueForLabel = function (labelDefinition) {
@@ -1048,7 +1048,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
 
   QuestionKit.loadValues = function (values, onLoaded) {
     const loaded = function (data) {
-      QuestionKit.currentAnswers = values
+      QuestionKit.currentAnswers = data
 
       if (QuestionKit.currentAnswers === undefined) {
         QuestionKit.currentAnswers = {}
