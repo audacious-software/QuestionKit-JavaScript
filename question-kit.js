@@ -1,4 +1,4 @@
-/* global requirejs */
+/* global requirejs, $ */
 
 if (requirejs.s.contexts._.config.paths.material === undefined || requirejs.s.contexts._.config.paths.jquery === undefined) {
   requirejs.config({
@@ -976,7 +976,7 @@ requirejs(dependencies, function (mdc, phonenumber, recaptcha, marked) {
 
           if (unit !== '') {
             QuestionKit.updateValue(key, {
-              unit: unit,
+              unit,
               quantity: count
             })
           } else {
